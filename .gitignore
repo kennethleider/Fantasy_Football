@@ -161,3 +161,8 @@ pip-log.txt
 
 # Mac crap
 .DS_Store
+/NFLPositionAnalysis/target/
+/NFLPositionAnalysis/devDb.h2.db
+/NFLPositionAnalysis/devDb.lock.db
+/NFLPositionAnalysis/devDb.trace.db
+/NFLPositionAnalysis/target-eclipse/
