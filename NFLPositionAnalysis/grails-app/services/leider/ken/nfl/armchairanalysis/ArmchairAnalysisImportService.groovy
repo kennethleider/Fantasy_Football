@@ -11,7 +11,7 @@ import leider.ken.nfl.stats.PlayerWeekStats
 class ArmchairAnalysisImportService {
     static transactional = false
     def sessionFactory
-    def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
+    def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP    
     def grailsApplication
     
     def load() {
