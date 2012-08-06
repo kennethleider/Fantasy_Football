@@ -6,6 +6,7 @@ import leider.ken.nfl.stats.Player
 import leider.ken.nfl.stats.PlayerStats
 import leider.ken.nfl.stats.PlayerWeekStats
 import leider.ken.nfl.armchairanalysis.ArmchairPlayerRef
+import leider.ken.nfl.stats.PlayerSeasonStats
 
 class YahooStatScraperService {
     static transactional = false
@@ -15,13 +16,14 @@ class YahooStatScraperService {
     
     def scrape() {
        def seasons = determineSeasons()
-       println seasons
        for (def season in seasons) {
            def weeks = determineWeeks(season)
-           scrapePlayers(season)
-//           for (def week in weeks) {
-//               scrapeQBs(week)
-//           }
+           //scrapePlayers(season)
+           for (def week in weeks) {
+               scrapeQBs(week)
+               break
+           }
+           break
        }
     }
     
@@ -86,6 +88,10 @@ class YahooStatScraperService {
                     if (player) {
                         ref.player = player
                         ref.save()
+                        
+                        PlayerSeasonStats stats = PlayerSeasonStats.findOrCreateWhere(player : player, season : season)
+                        stats.games = toInt(td[2].text())
+                        stats.save()
                     } else {
                         println "Unable to find a match for yahoo player: ${i} - ${name}}"
                     }
@@ -95,6 +101,38 @@ class YahooStatScraperService {
         }
     }
 
+     def scrapeQBs(Week week) {
+         process("QBs - ${week}",
+            "http://sports.yahoo.com/nfl/stats/byposition?pos=QB&year=season_${week.season.year}&timeframe=Week${week.number}&qualified=0",
+            { it.@class.text().contains("ysprow")},
+            {
+                def td = it.td
+                def id = (td[0].a.@href.text()=~ /\d+/)[0].toLong()
+   
+                Player player = YahooPlayerRef.get(id)?.player
+                PlayerWeekStats stats = PlayerWeekStats.findOrCreateWhere(player: player, week :  week)
+                stats.passing.qbRating = td[4].span.text().toDouble()
+                stats.passing.completions = toInt(td[5].text())
+                stats.passing.attempts = toInt(td[6].text())
+                stats.passing.yards = toInt(td[7].text())
+                stats.passing.interceptions = toInt(td[10].text())
+                stats.passing.TDs = toInt(td[11].text())
+                                              
+                stats.rushing.attempts = toInt(td[13].text())
+                stats.rushing.yards = toInt(td[14].text())
+                stats.rushing.TDs = toInt(td[17].text())
+                
+                stats.passing.sacks = toInt(td[19].text())
+                stats.passing.sackYards = toInt(td[20].text())
+                
+                stats.rushing.fumbles = toInt(td[22].text())
+                stats.rushing.fumblesLost = toInt(td[23].text())
+                println player.name + " : " + stats.rushing.fumblesLost
+            }
+        ) 
+
+    }
+    
     
     private def process(String name, String url, Closure filter, Closure scraper) throws Exception {
         InputStream input = new URL(url).openStream()
@@ -123,5 +161,12 @@ class YahooStatScraperService {
 
     }
     
-  
+    private int toInt(String field) {
+        field = field.replaceAll("[^-0-9]","")
+        if (field) {
+            return field.toInteger()
+        }
+        
+        return 0
+    }
 }
