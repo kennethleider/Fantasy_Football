@@ -20,7 +20,10 @@ class YahooStatScraperService {
            def weeks = determineWeeks(season)
            //scrapePlayers(season)
            for (def week in weeks) {
-               scrapeQBs(week)
+               //scrapeQBs(week)
+               //scrapeRBs(week)
+               //scrapeWRs(week)
+               scrapeTEs(week)
                break
            }
            break
@@ -132,6 +135,84 @@ class YahooStatScraperService {
         ) 
 
     }
+        
+    def scrapeRBs(Week week) {
+        process("RBs - ${week}",
+            "http://sports.yahoo.com/nfl/stats/byposition?pos=RB&year=season_${week.season.year}&timeframe=Week${week.number}&qualified=0",
+            { it.@class.text().contains("ysprow")},
+            {
+                def td = it.td
+                def id = (td[0].a.@href.text()=~ /\d+/)[0].toLong()
+                
+                Player player = YahooPlayerRef.get(id)?.player
+                PlayerWeekStats stats = PlayerWeekStats.findOrCreateWhere(player: player, week :  week)                       
+                stats.rushing.attempts = toInt(td[4].text())
+                stats.rushing.yards = toInt(td[5].text())
+                stats.rushing.TDs = toInt(td[8].text())
+                
+                stats.receiving.receptions = toInt(td[10].text())
+                stats.receiving.yards = toInt(td[11].text())
+                stats.receiving.TDs = toInt(td[14].text())
+                
+                stats.rushing.fumbles = toInt(td[16].text())
+                stats.rushing.fumblesLost = toInt(td[17].text())
+                println player.name + " : " + stats.rushing.fumbles
+            }
+        ) 
+    }
+    
+    def scrapeWRs(Week week) {
+        process("WRs - ${week}",
+            "http://sports.yahoo.com/nfl/stats/byposition?pos=WR&year=season_${week.season.year}&timeframe=Week${week.number}&qualified=0",
+            { it.@class.text().contains("ysprow")},
+            {
+                def td = it.td
+                def id = (td[0].a.@href.text()=~ /\d+/)[0].toLong()
+                
+                Player player = YahooPlayerRef.get(id)?.player
+                PlayerWeekStats stats = PlayerWeekStats.findOrCreateWhere(player: player, week :  week)                       
+                stats.receiving.receptions = toInt(td[4].text())
+                stats.receiving.yards = toInt(td[5].text())
+                stats.receiving.TDs = toInt(td[8].text())
+                
+                stats.kickoff.attempts = toInt(td[10].text())
+                stats.kickoff.yards = toInt(td[11].text())
+                stats.kickoff.TDs = toInt(td[14].text())
+                
+                stats.punt.attempts = toInt(td[16].text())
+                stats.punt.yards = toInt(td[17].text())
+                stats.punt.TDs = toInt(td[20].text())
+              
+                stats.rushing.fumbles = toInt(td[22].text())
+                stats.rushing.fumblesLost = toInt(td[23].text())
+            }
+        ) 
+    }
+    
+    def scrapeTEs(Week week) {
+        process("TEs - ${week}",
+            "http://sports.yahoo.com/nfl/stats/byposition?pos=TE&year=season_${week.season.year}&timeframe=Week${week.number}&qualified=0",
+            { it.@class.text().contains("ysprow")},
+            {
+                def td = it.td
+                def id = (td[0].a.@href.text()=~ /\d+/)[0].toLong()
+                
+                Player player = YahooPlayerRef.get(id)?.player
+                PlayerWeekStats stats = PlayerWeekStats.findOrCreateWhere(player: player, week :  week)                       
+                stats.receiving.receptions = toInt(td[4].text())
+                stats.receiving.yards = toInt(td[5].text())
+                stats.receiving.TDs = toInt(td[8].text())
+                
+                stats.rushing.attempts = toInt(td[10].text())
+                stats.rushing.yards = toInt(td[11].text())
+                stats.rushing.TDs = toInt(td[14].text())
+                
+                stats.rushing.fumbles = toInt(td[16].text())
+                stats.rushing.fumblesLost = toInt(td[17].text())
+                println "${player} - ${stats.rushing.properties.sort()}"
+            }
+        ) 
+    }
     
     
     private def process(String name, String url, Closure filter, Closure scraper) throws Exception {
@@ -158,8 +239,8 @@ class YahooStatScraperService {
         
         input.close()
         return retval
-
     }
+    
     
     private int toInt(String field) {
         field = field.replaceAll("[^-0-9]","")
