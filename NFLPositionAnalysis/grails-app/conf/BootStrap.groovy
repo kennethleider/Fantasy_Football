@@ -15,6 +15,14 @@ class BootStrap {
         league.scoring.rushing.perConversion = 2
         league.scoring.rushing.perFumbleLost = -2
         
+        league.scoring.receiving.perYard = 0.1
+        league.scoring.receiving.perReception = 1
+        league.scoring.receiving.perTD = 6
+        league.scoring.receiving.perConversion = 2
+        
+        league.scoring.returning.perYard = 0.04
+        league.scoring.returning.perTD = 6
+        
         
     }
     def destroy = {

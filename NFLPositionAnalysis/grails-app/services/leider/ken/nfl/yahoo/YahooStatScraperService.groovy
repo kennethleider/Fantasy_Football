@@ -18,15 +18,13 @@ class YahooStatScraperService {
        def seasons = determineSeasons()
        for (def season in seasons) {
            def weeks = determineWeeks(season)
-           //scrapePlayers(season)
+           scrapePlayers(season)
            for (def week in weeks) {
-               //scrapeQBs(week)
-               //scrapeRBs(week)
-               //scrapeWRs(week)
+               scrapeQBs(week)
+               scrapeRBs(week)
+               scrapeWRs(week)
                scrapeTEs(week)
-               break
            }
-           break
        }
     }
     
@@ -53,13 +51,13 @@ class YahooStatScraperService {
     def scrapePlayers(Season season) {
         for (def position in [ 'QB', 'RB', 'WR', 'TE' ]) {
             process("Players - ${season} - ${position}",
-            "http://sports.yahoo.com/nfl/stats/byposition?pos=${position}&year=season_${season.year}",
+            "http://sports.yahoo.com/nfl/stats/byposition?pos=${position}&year=season_${season.year}&qualified=0",
                 { it.@class.text().contains("ysprow")},
                 {
                     def td = it.td
                     def id = (td[0].a.@href.text()=~ /\d+/)[0].toLong()
                     def name = td[0].a.text()
-                    
+
                     def ref = YahooPlayerRef.get(id)
                     if (!ref) {
                         ref = new YahooPlayerRef()
@@ -69,13 +67,13 @@ class YahooStatScraperService {
                     def player
                     
                     def code = grailsApplication.config.yahooLookup[id]
-                    if (code) {
+                    if (code != null) {
                         player = ArmchairPlayerRef.findByCode(code)?.player
                         player.name = name
                         player.save()
                     }
                     
-                    if (!player) {
+                    if (player == null) {
                         def matches = Player.findAllByName(name)
                         if (matches.size() == 1) {
                             player = matches[0]
@@ -88,7 +86,7 @@ class YahooStatScraperService {
                         }
                     }
                     
-                    if (player) {
+                    if (player != null) {
                         ref.player = player
                         ref.save()
                         
@@ -130,7 +128,6 @@ class YahooStatScraperService {
                 
                 stats.rushing.fumbles = toInt(td[22].text())
                 stats.rushing.fumblesLost = toInt(td[23].text())
-                println player.name + " : " + stats.rushing.fumblesLost
             }
         ) 
 
@@ -156,7 +153,6 @@ class YahooStatScraperService {
                 
                 stats.rushing.fumbles = toInt(td[16].text())
                 stats.rushing.fumblesLost = toInt(td[17].text())
-                println player.name + " : " + stats.rushing.fumbles
             }
         ) 
     }
@@ -209,7 +205,6 @@ class YahooStatScraperService {
                 
                 stats.rushing.fumbles = toInt(td[16].text())
                 stats.rushing.fumblesLost = toInt(td[17].text())
-                println "${player} - ${stats.rushing.properties.sort()}"
             }
         ) 
     }

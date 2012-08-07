@@ -17,9 +17,9 @@ class ArmchairAnalysisImportService {
     def load() {
         process(processGames, grailsApplication.config.armchairanalysis.dir + "\\GAMES.csv")
         process(processPlayers, grailsApplication.config.armchairanalysis.dir + "\\ROSTER.csv")
-        //process(processPlays, grailsApplication.config.armchairanalysis.dir + "\\FLAT_FILE.csv")
+        process(processPlays, grailsApplication.config.armchairanalysis.dir + "\\FLAT_FILE.csv")
         process(processOffense, grailsApplication.config.armchairanalysis.dir + "\\OFFENSE.csv")
-        //computeWeekStats()
+        computeWeekStats()
     }
     
     private void process(Closure closure, String fileName) throws Exception {

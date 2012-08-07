@@ -5,12 +5,14 @@ class PlayerStats {
     static constraints = {
     }
     
-    static embedded = ['passing', 'rushing', 'receiving']
+    static embedded = ['passing', 'rushing', 'receiving', 'kickoff', 'punt']
     Player player
     
     PassingStats passing = new PassingStats()
     RushingStats rushing = new RushingStats()
     ReceivingStats receiving = new ReceivingStats()
+    ReturnStats kickoff = new ReturnStats()
+    ReturnStats punt = new ReturnStats()
 }
 
 class PassingStats {
@@ -41,5 +43,11 @@ class ReceivingStats {
     int yards
     int TDs
     int conversions
+}
+
+class ReturnStats {
+    int attempts
+    int yards
+    int TDs
 }
 

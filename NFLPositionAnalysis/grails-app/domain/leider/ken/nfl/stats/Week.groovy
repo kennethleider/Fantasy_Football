@@ -9,6 +9,7 @@ class Week {
 
     static mapping = {
         sort season: 'desc', number: 'asc'
+        season lazy : false
     }
 	
     Integer number
