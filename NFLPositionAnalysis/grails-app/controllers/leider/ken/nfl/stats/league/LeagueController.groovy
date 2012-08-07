@@ -6,7 +6,7 @@ class LeagueController {
     
     def score() {
         League league = League.get(params.id)
-        scoreService.calculateWeeklyScores(league)
+        //scoreService.calculateWeeklyScores(league)
         scoreService.calculateSeasonScores(league)
     }
 }

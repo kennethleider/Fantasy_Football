@@ -2,6 +2,7 @@ package leider.ken.nfl.stats
 
 import leider.ken.nfl.stats.league.*
 class ScoreService {
+    static transactional = false
     def sessionFactory
     
     def calculateWeeklyScores(League league) {
@@ -45,11 +46,44 @@ class ScoreService {
         )
     }
     
+    def calculateSeasonScores(League league) {
+        println "query"
+        def results = Score.executeQuery(
+            "select score.week.season, score.player, \
+            sum(score.points), avg(score.points), max(score.points), min(score.points),\
+            sum(score.points * score.points), count(*)\
+            from Score as score\
+            where score.league = ?\
+            group by score.week.season, score.player\
+            order by score.player, score.week.season desc\
+            ", [league])
+        println "done"
+        def iter = results.collate(100).iterator()
+        process("Season stats", results.size(), 
+            { 
+                iter.next() 
+            },
+            { Object[] row -> 
+                
+                SeasonScore score = SeasonScore.findOrCreateWhere(season : row[0], player : row[1], league : league)
+                score.total  = row[2]
+                score.average = row[3]
+                score.max = row[4]
+                score.min = row[5]
+                score.standardDeviation = row[7] > 1 ? Math.sqrt(row[6]/(row[7] - 1)) : 0
+                
+
+score.save()
+            }
+        )               
+    }
+    
     private def process(String name, long total, Closure groupIterator, Closure worker) throws Exception {
         int i = 0
         def retval = []
-        def group = groupIterator()
+        
         while(i < total) {
+            def group = groupIterator()
             long start = System.currentTimeMillis()
             for (def value in group) {
                 retval.add(worker(value))

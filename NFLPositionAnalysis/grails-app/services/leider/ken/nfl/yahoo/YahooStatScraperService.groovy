@@ -70,7 +70,6 @@ class YahooStatScraperService {
                     if (code != null) {
                         player = ArmchairPlayerRef.findByCode(code)?.player
                         player.name = name
-                        player.save()
                     }
                     
                     if (player == null) {
@@ -87,6 +86,9 @@ class YahooStatScraperService {
                     }
                     
                     if (player != null) {
+                        player.position = position
+                        player.save()
+                        
                         ref.player = player
                         ref.save()
                         
