@@ -14,7 +14,7 @@ class YahooStatScraperService {
     private def slurper = new XmlSlurper(new org.ccil.cowan.tagsoup.Parser())
     def grailsApplication
     
-    def scrape() {
+    def load() {
        def seasons = determineSeasons()
        for (def season in seasons) {
            def weeks = determineWeeks(season)
