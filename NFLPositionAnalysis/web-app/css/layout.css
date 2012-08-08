@@ -1,13 +1,13 @@
 #left, #right {
     float: left;
-    margin-top: 21px;
 }
 
 #left {
-    width: 627px;
-    margin-right: 14px;
+    width: 70%;
+    margin-right: 2em;
+    margin-left: 1em;
 }
 
 #right {
-    width: 319px;
+    width: 20%;
 }

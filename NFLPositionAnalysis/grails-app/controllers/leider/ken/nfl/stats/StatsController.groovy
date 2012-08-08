@@ -14,7 +14,7 @@ class StatsController {
             seasonStatCount : PlayerSeasonStats.count(),
             seasons : Season.list(),
             lastWeek : Week.list().last(),
-            commandHistoy : CommandHistory.list().collectEntries { [ it.commandAction , it.lastPerformed ]}
+            commandHistory : CommandHistory.list().collectEntries { [ it.controllerAction , it.lastPerformed ]}
         ]
     }
     
@@ -25,6 +25,10 @@ class StatsController {
     
     def armchair() {
         armchairAnalysisImportService.load()
+        CommandHistory history = CommandHistory.findOrCreateWhere(controllerAction : "${params.controller}.${params.action}")
+        history.lastPerformed = new Date()
+        history.save()
+        redirect (action : 'index')
     }
     
     def playerDetails() {
