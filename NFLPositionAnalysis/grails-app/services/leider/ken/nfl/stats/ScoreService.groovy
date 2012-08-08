@@ -47,17 +47,18 @@ class ScoreService {
     }
     
     def calculateSeasonScores(League league) {
-        println "query"
+
         def results = Score.executeQuery(
             "select score.week.season, score.player, \
             sum(score.points), avg(score.points), max(score.points), min(score.points),\
             sum(score.points * score.points), count(*)\
             from Score as score\
             where score.league = ?\
+            and score.week.number < 18\
             group by score.week.season, score.player\
             order by score.player, score.week.season desc\
             ", [league])
-        println "done"
+
         def iter = results.collate(100).iterator()
         process("Season stats", results.size(), 
             { 
@@ -71,9 +72,14 @@ class ScoreService {
                 score.max = row[4]
                 score.min = row[5]
                 score.standardDeviation = row[7] > 1 ? Math.sqrt(row[6]/(row[7] - 1)) : 0
-                
+                if (row[7] > 1) {
+                    double numerator = row[6] - 2 * score.average * score.total + row[7] * score.average * score.average
+                    score.standardDeviation = Math.sqrt(numerator / (row[7] - 1))
+                } else {
+                    score.standardDeviation = 0
+                }
 
-score.save()
+                score.save()
             }
         )               
     }

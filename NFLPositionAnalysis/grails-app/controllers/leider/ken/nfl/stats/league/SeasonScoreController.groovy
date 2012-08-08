@@ -2,6 +2,8 @@ package leider.ken.nfl.stats.league
 
 import org.springframework.dao.DataIntegrityViolationException
 
+import leider.ken.nfl.stats.Season
+
 class SeasonScoreController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
@@ -12,7 +14,9 @@ class SeasonScoreController {
 
     def list(Integer max) {
         params.max = Math.min(max ?: 10, 100)
-        [seasonScoreInstanceList: SeasonScore.list(params), seasonScoreInstanceTotal: SeasonScore.count()]
+        
+        [seasonScoreInstanceList: SeasonScore.findAllBySeason(Season.findByYear(2011), params), seasonScoreInstanceTotal: SeasonScore.countBySeason(Season.findByYear(2011))]
+        //[seasonScoreInstanceList: SeasonScore.list(params), seasonScoreInstanceTotal: SeasonScore.count()]
     }
 
     def create() {

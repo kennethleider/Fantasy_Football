@@ -4,6 +4,7 @@ import org.springframework.dao.DataIntegrityViolationException
 
 import leider.ken.nfl.stats.Week
 import leider.ken.nfl.stats.Season
+import leider.ken.nfl.stats.Player
 
 class ScoreController {
 
@@ -15,13 +16,8 @@ class ScoreController {
 
     def list(Integer max) {
         params.max = Math.min(max ?: 10, 100)
-        
-        def season = Season.findByYear(2011)
-        println season
-        def week = Week.findBySeasonAndNumber(season, 1)
-        println week
 
-        [scoreInstanceList: Score.findAllByWeek(week, params), scoreInstanceTotal: Score.countByWeek(week)]
+        [scoreInstanceList: Score.findAllByPlayer(Player.get(1125), params), scoreInstanceTotal: Score.countByPlayer(Player.get(1125))]
         //[scoreInstanceList: Score.list(params), scoreInstanceTotal: Score.count()]
     }
 

@@ -12,6 +12,10 @@ class PlayerWeekStatsController {
 
     def list(Integer max) {
         params.max = Math.min(max ?: 10, 100)
+        for ( int i in 0..15) {
+            println PlayerWeekStats.findAllByPlayer(Player.get(1125))[i].receiving.properties
+            println PlayerWeekStats.findAllByPlayer(Player.get(1125))[i].week
+        }
         [playerWeekStatsInstanceList: PlayerWeekStats.list(params), playerWeekStatsInstanceTotal: PlayerWeekStats.count()]
     }
 
