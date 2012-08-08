@@ -19,7 +19,11 @@ class StatsController {
     }
     
     def yahoo() {
-        yahooStatScraperService.load()
+        //yahooStatScraperService.load()
+        CommandHistory history = CommandHistory.findOrCreateWhere(controllerAction : "${params.controller}.${params.action}")
+        history.lastPerformed = new Date()
+        history.save()
+        redirect (action : 'index')
         
     }
     

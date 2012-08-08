@@ -8,7 +8,7 @@ class Week {
     }
 
     static mapping = {
-        sort season: 'desc', number: 'asc'
+        sort season: 'asc', number: 'asc'
         season lazy : false
     }
 	
