@@ -27,7 +27,7 @@ class BootStrap {
         
         league.save()
         
-        RosterPosition.findAllByLeague(league).each { println it; it.delete() }
+        RosterPosition.findAllByLeague(league).each { it.delete() }
         new RosterPosition(league: league, positions : [ 'QB' ], slots : 2).save()
         new RosterPosition(league: league, positions : [ 'RB' ], slots : 3).save()
         new RosterPosition(league: league, positions : [ 'WR' ], slots : 4).save()

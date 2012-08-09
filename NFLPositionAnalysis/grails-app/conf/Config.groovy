@@ -96,7 +96,7 @@ log4j = {
 
 regularSeasonWeeks = 17
 armchairanalysis.dir = "D:\\temp\\armchairanalysis"
-
+playerPositionOrder = [ 'QB', 'RB', 'WR', 'TE' ]
 yahooLookup = [
     8261L : 'AP-070',
     4653L : 'RW-260',
