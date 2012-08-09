@@ -94,6 +94,7 @@ log4j = {
     //trace 'org.hibernate.SQL'
 }
 
+regularSeasonWeeks = 17
 armchairanalysis.dir = "D:\\temp\\armchairanalysis"
 
 yahooLookup = [

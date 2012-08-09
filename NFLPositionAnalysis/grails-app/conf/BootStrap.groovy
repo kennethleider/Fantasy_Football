@@ -1,9 +1,11 @@
 import leider.ken.nfl.stats.league.League
+import leider.ken.nfl.stats.league.RosterPosition
 class BootStrap {
 
     def init = { servletContext ->
         League league = League.findOrSaveWhere(name : "Battle School", url: "http://fantasy.nfl.com/league/386519")
-        
+        league.teams = 12
+  
         league.scoring.passing.perCompletion = 0.1
         league.scoring.passing.perYard = 0.04
         league.scoring.passing.perTD = 4
@@ -23,7 +25,9 @@ class BootStrap {
         league.scoring.returning.perYard = 0.04
         league.scoring.returning.perTD = 6
         
-        
+        league.roster.add(new RosterPosition(positions : [ 'WR' ], count : 4))
+
+        league.save(flush : true)
     }
     def destroy = {
     }

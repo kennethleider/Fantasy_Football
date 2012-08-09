@@ -5,46 +5,71 @@ class ScoreService {
     static transactional = false
     def sessionFactory
     
-    def calculateWeeklyScores(League league) {
-        int offset = 0
-        int max = 100
-        
-        process("Weekly Stats", PlayerWeekStats.count(), 
-            {
-                def list = PlayerWeekStats.list([max : max, offset : offset])
-                offset += list.size()
-
-                return list
-            },
-            { PlayerStats stats ->
-                Score score = Score.findOrCreateWhere(week : stats.week, player : stats.player, league : league)
-                
-                score.points = stats.passing.yards * league.scoring.passing.perYard
-                score.points += stats.passing.completions * league.scoring.passing.perCompletion
-                score.points += stats.passing.TDs * league.scoring.passing.perTD
-                score.points += stats.passing.interceptions * league.scoring.passing.perInt
-                score.points += stats.passing.conversions * league.scoring.passing.perConversion
-                
-                score.points += stats.rushing.yards * league.scoring.rushing.perYard
-                score.points += stats.rushing.TDs * league.scoring.rushing.perTD
-                score.points += stats.rushing.fumblesLost * league.scoring.rushing.perFumbleLost
-                score.points += stats.rushing.conversions * league.scoring.rushing.perConversion
-                
-                score.points += stats.receiving.yards * league.scoring.receiving.perYard
-                score.points += stats.receiving.TDs * league.scoring.receiving.perTD
-                score.points += stats.receiving.receptions * league.scoring.receiving.perReception
-                score.points += stats.receiving.conversions * league.scoring.receiving.perConversion
-                
-                score.points += stats.kickoff.yards * league.scoring.returning.perYard
-                score.points += stats.kickoff.TDs * league.scoring.returning.perTD
-                
-                score.points += stats.punt.yards * league.scoring.returning.perYard
-                score.points += stats.punt.TDs * league.scoring.returning.perTD
-
-                score.save()
+    def calculateWeeklyScores(League league, boolean overwrite) {        
+        def calculate = { PlayerWeekStats stats ->
+            Score score = Score.findByWeekAndPlayerAndLeague(stats.week, stats.player, league)
+            if (!score) {
+                score = new Score(week : stats.week, player : stats.player, league : league)
             }
-        )
+            
+            score.points = stats.passing.yards * league.scoring.passing.perYard
+            score.points += stats.passing.completions * league.scoring.passing.perCompletion
+            score.points += stats.passing.TDs * league.scoring.passing.perTD
+            score.points += stats.passing.interceptions * league.scoring.passing.perInt
+            score.points += stats.passing.conversions * league.scoring.passing.perConversion
+            
+            score.points += stats.rushing.yards * league.scoring.rushing.perYard
+            score.points += stats.rushing.TDs * league.scoring.rushing.perTD
+            score.points += stats.rushing.fumblesLost * league.scoring.rushing.perFumbleLost
+            score.points += stats.rushing.conversions * league.scoring.rushing.perConversion
+            
+            score.points += stats.receiving.yards * league.scoring.receiving.perYard
+            score.points += stats.receiving.TDs * league.scoring.receiving.perTD
+            score.points += stats.receiving.receptions * league.scoring.receiving.perReception
+            score.points += stats.receiving.conversions * league.scoring.receiving.perConversion
+            
+            score.points += stats.kickoff.yards * league.scoring.returning.perYard
+            score.points += stats.kickoff.TDs * league.scoring.returning.perTD
+            
+            score.points += stats.punt.yards * league.scoring.returning.perYard
+            score.points += stats.punt.TDs * league.scoring.returning.perTD
+            
+            score.save()
+            return score
+        }
+        
+        if (!overwrite) {
+            def results = Score.executeQuery(
+            "select stats\
+            from PlayerWeekStats as stats\
+            inner join fetch stats.week\
+            inner join fetch stats.player\
+            where stats not in (\
+               select stats\
+               from Score as score, PlayerWeekStats as stats\
+               where score.player = stats.player\
+               and score.week = stats.week\
+               and score.league = ?\
+            ) \
+            ", [league])
+
+            def iter = results.collate(100).iterator()
+            process("Weekly stats", results.size(), { iter.next() }, calculate)
+        } else {    
+            int offset = 0
+            int max = 100
+            process("Weekly Stats", PlayerWeekStats.count(), 
+                {
+                    def list = PlayerWeekStats.list([max : max, offset : offset])
+                    offset += list.size()
+                    
+                    return list
+                },
+                calculate
+            )
+        }
     }
+
     
     def calculateSeasonScores(League league) {
 
@@ -74,7 +99,7 @@ class ScoreService {
                 score.standardDeviation = row[7] > 1 ? Math.sqrt(row[6]/(row[7] - 1)) : 0
                 if (row[7] > 1) {
                     double numerator = row[6] - 2 * score.average * score.total + row[7] * score.average * score.average
-                    score.standardDeviation = Math.sqrt(numerator / (row[7] - 1))
+                    score.standardDeviation = Math.sqrt(numerator / row[7])
                 } else {
                     score.standardDeviation = 0
                 }
