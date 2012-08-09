@@ -26,6 +26,31 @@
       <div class="message" role="status">${flash.message}</div>
     </g:if>
 
+    <table>
+      <thead>
+        <tr>
+          
+          <th><g:message code="league.scoring.label" default="Position" /></th>
+          <g:each in="${seasonInstanceList}" status="i" var="seasonInstance">
+            <th>${seasonInstance.year}</th>
+          </g:each>
+      
+          </tr>
+      </thead>
+      <tbody>
+      <g:each in="${positionAnalysisLookup}" status="i" var="entry">
+          <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
+            <td>${entry.key}</td>
+            <g:each in="${seasonInstanceList}" var="seasonInstance">
+              <g:set var="analysis" value="${entry.value.get(seasonInstance.year)}"/>
+              <td>${analysis[0].fiftiethPercentile.average}</td>
+            </g:each>
+          </tr>
+      </g:each>
+      </tbody>
+    </table>
+
+
     <g:form>
       <fieldset class="buttons">
         <g:hiddenField name="id" value="${leagueInstance?.id}" />
