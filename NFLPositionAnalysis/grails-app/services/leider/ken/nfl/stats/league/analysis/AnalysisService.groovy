@@ -66,6 +66,42 @@ class AnalysisService {
             analysis.playables = Mean.compute(lists['playables'])
             analysis.save()
         }
-
+    }
+    
+    def analyzePlayers(League league) {
+        def positions = computeDepths(league.roster, league.teams).keySet()
+        for (def position in positions) {
+            for (def season in Season.list()) {
+                PositionSeasonAnalysis positionAnalysis = 
+                PositionSeasonAnalysis.findBySeasonAndLeagueAndPosition(season, league, position)
+                
+                if (positionAnalysis != null) {
+                    analyzePlayers(positionAnalysis)
+                }
+                break
+            }
+            break
+        }
+    }
+    
+    def analyzePlayers(PositionSeasonAnalysis positionAnalysis) {
+        def scores = Score.executeQuery("\
+                    select score.player, score.points\
+                    from Score as score\
+                    where score.league = :league\
+                    and score.week.season = :season\
+                    and score.player.position = :position\
+                    order by score.player\
+                    ", [league : positionAnalysis.league, 
+                        season : positionAnalysis.season, 
+                        position : positionAnalysis.position]
+                )
+        
+        for (def playerScores in scores.groupBy { it[0] }) {
+            def player = playerScores.key
+            def points = playerScores.value.collect { it[1] }
+            
+            println "${player} - ${points}"
+        }
     }
 }

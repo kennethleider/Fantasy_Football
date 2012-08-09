@@ -43,7 +43,8 @@ class LeagueController {
     
     def analyze() {
         League league = League.get(params.id)
-        analysisService.analyzePositions(league)
+        //analysisService.analyzePositions(league)
+        analysisService.analyzePlayers(league)
         
     }
 }
