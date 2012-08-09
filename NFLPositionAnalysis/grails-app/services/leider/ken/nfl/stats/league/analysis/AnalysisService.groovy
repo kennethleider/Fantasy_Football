@@ -9,21 +9,26 @@ class AnalysisService {
     def grailsApplication
     
     def analyzePositions(League league) {
-        computeDepths(league.roster, league.teams)
-        //analyzePosition(league, "WR", league.teams * league.wrPositions)
+        def depths = computeDepths(league.roster, league.teams)
+        for (def depth in depths) {
+            analyzePosition(league, depth.key, Math.ceil(depth.value).toInteger())
+        }
     }
     
-    private Map<String, Double> computeDepths(List<RosterPosition> roster, int teams) {
+    private Map<String, Double> computeDepths(def roster, int teams) {
         Map<String, Double> retval = [:]
         
         for (def rosterPosition in roster) {
-            double depth = rosterPosition.count * teams / rosterPosition.positions.size()
+            double depth = rosterPosition.slots * teams / rosterPosition.positions.size()
             for (def position in rosterPosition.positions) {
-                retval[position] += depth
+                if (retval.containsKey(position)) {
+                    retval[position] += depth
+                } else {
+                    retval[position] = depth
+                }
             }
-        }
-        println roster
-        println retval
+        } 
+        return retval  
     }
     
     private def analyzePosition(League league, String position, int depth) {
@@ -51,14 +56,14 @@ class AnalysisService {
                 lists[p25].add(scores[p25])
                 lists[p50].add(scores[p50])
                 lists[p100].add(scores[p100])
-                lists[playables].addAll(scores.take(depth))
+                lists['playables'].addAll(scores.take(depth))
             }
             
             PositionSeasonAnalysis analysis = PositionSeasonAnalysis.findOrCreateWhere(season : season, league : league, position : position)
             analysis.twentyFifthPercentile = Mean.compute(lists[p25])
             analysis.fiftiethPercentile = Mean.compute(lists[p50])
             analysis.hundrethPercentile = Mean.compute(lists[p100])
-            analysis.playables = Mean.compute(lists[playables])
+            analysis.playables = Mean.compute(lists['playables'])
             analysis.save()
         }
 

@@ -1,6 +1,8 @@
 package leider.ken.nfl.stats.league
 
 class League {
+    static hasMany = [roster : RosterPosition]
+    
     static constraints = {
         teams nullable : true        
     }
@@ -10,10 +12,4 @@ class League {
 
     ScoringRules scoring = new ScoringRules()
     Integer teams
-    List<RosterPosition> roster = []
 }
-
-   class RosterPosition {
-       List<String> positions
-       int count
-   }

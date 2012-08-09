@@ -25,9 +25,13 @@ class BootStrap {
         league.scoring.returning.perYard = 0.04
         league.scoring.returning.perTD = 6
         
-        league.roster.add(new RosterPosition(positions : [ 'WR' ], count : 4))
-
-        league.save(flush : true)
+        league.save()
+        
+        RosterPosition.findAllByLeague(league).each { println it; it.delete() }
+        new RosterPosition(league: league, positions : [ 'QB' ], slots : 2).save()
+        new RosterPosition(league: league, positions : [ 'RB' ], slots : 3).save()
+        new RosterPosition(league: league, positions : [ 'WR' ], slots : 4).save()
+        new RosterPosition(league: league, positions : [ 'TE' ], slots : 1).save()
     }
     def destroy = {
     }
