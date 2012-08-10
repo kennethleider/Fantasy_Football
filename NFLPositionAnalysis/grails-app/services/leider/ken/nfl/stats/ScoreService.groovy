@@ -54,11 +54,11 @@ class ScoreService {
             ", [league])
 
             def iter = results.collate(100).iterator()
-            process("Weekly stats", results.size(), { iter.next() }, calculate)
+            process("Weekly scores", results.size(), { iter.next() }, calculate)
         } else {    
             int offset = 0
             int max = 100
-            process("Weekly Stats", PlayerWeekStats.count(), 
+            process("Weekly scores", PlayerWeekStats.count(), 
                 {
                     def list = PlayerWeekStats.list([max : max, offset : offset])
                     offset += list.size()
@@ -85,7 +85,7 @@ class ScoreService {
             ", [league])
 
         def iter = results.collate(100).iterator()
-        process("Season stats", results.size(), 
+        process("Season scores", results.size(), 
             { 
                 iter.next() 
             },

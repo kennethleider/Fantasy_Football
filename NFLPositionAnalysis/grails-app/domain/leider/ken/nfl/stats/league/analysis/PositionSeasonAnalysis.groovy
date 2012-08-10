@@ -19,6 +19,7 @@ class PositionSeasonAnalysis {
     League league
     String position
     Season season
+    Mean zerothPercentile
     Mean twentyFifthPercentile
     Mean fiftiethPercentile
     Mean hundrethPercentile

@@ -9,7 +9,7 @@ class LeagueController {
     def scoreService
     def analysisService
     
-    def show(Long id) {
+    def position(Long id) {
         def leagueInstance = League.get(id)
         if (!leagueInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'score.label', default: 'League'), id])
@@ -43,7 +43,7 @@ class LeagueController {
     
     def analyze() {
         League league = League.get(params.id)
-        //analysisService.analyzePositions(league)
+        analysisService.analyzePositions(league)
         analysisService.analyzePlayers(league)
         
     }

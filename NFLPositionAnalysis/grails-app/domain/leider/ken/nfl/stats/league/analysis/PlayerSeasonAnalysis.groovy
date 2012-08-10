@@ -7,6 +7,12 @@ import leider.ken.nfl.stats.Occurance
 class PlayerSeasonAnalysis {
     
     static constraints = {
+        player()
+        season()
+        twentyFifthPercentile()
+        fiftiethPercentile()
+        hundrethPercentile()
+        playables()
     }
     
     static mapping = {

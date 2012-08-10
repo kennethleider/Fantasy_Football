@@ -3,6 +3,7 @@ package leider.ken.nfl.stats.league.analysis
 import leider.ken.nfl.stats.league.*
 import leider.ken.nfl.stats.Mean
 import leider.ken.nfl.stats.Season
+import leider.ken.nfl.stats.Occurance
 class AnalysisService {
     static transactional = false
     def sessionFactory
@@ -32,9 +33,10 @@ class AnalysisService {
     }
     
     private def analyzePosition(League league, String position, int depth) {
-        int p25 = depth / 4 -1
-        int p50 = depth / 2 -1
-        int p100 = depth -1
+        int p0 = 0
+        int p25 = depth / 4 - 1
+        int p50 = depth / 2 - 1
+        int p100 = depth - 1
         
         for (def season in Season.list()) {
             def lists = [ (p25) : [], (p50) : [], (p100) : [], playables : []]
@@ -52,7 +54,7 @@ class AnalysisService {
                     and score.player.position = :position\
                     order by score.points desc\
                     ", [league : league, week : week, position : position])
-                
+                lists[p0].add(scores[0])
                 lists[p25].add(scores[p25])
                 lists[p50].add(scores[p50])
                 lists[p100].add(scores[p100])
@@ -60,6 +62,7 @@ class AnalysisService {
             }
             
             PositionSeasonAnalysis analysis = PositionSeasonAnalysis.findOrCreateWhere(season : season, league : league, position : position)
+            analysis.zerothPercentile = Mean.compute(lists[p0])
             analysis.twentyFifthPercentile = Mean.compute(lists[p25])
             analysis.fiftiethPercentile = Mean.compute(lists[p50])
             analysis.hundrethPercentile = Mean.compute(lists[p100])
@@ -78,30 +81,40 @@ class AnalysisService {
                 if (positionAnalysis != null) {
                     analyzePlayers(positionAnalysis)
                 }
-                break
             }
-            break
         }
     }
-    
+        
     def analyzePlayers(PositionSeasonAnalysis positionAnalysis) {
+        def league = positionAnalysis.league
+        def season = positionAnalysis.season
+       
         def scores = Score.executeQuery("\
                     select score.player, score.points\
                     from Score as score\
                     where score.league = :league\
                     and score.week.season = :season\
                     and score.player.position = :position\
+                    and score.week.number <= :maxWeek\
                     order by score.player\
-                    ", [league : positionAnalysis.league, 
-                        season : positionAnalysis.season, 
-                        position : positionAnalysis.position]
+                    ", [league : league, 
+                        season : season, 
+                        position : positionAnalysis.position,
+                        maxWeek : grailsApplication.config.regularSeasonWeeks]
                 )
+        
         
         for (def playerScores in scores.groupBy { it[0] }) {
             def player = playerScores.key
             def points = playerScores.value.collect { it[1] }
             
-            println "${player} - ${points}"
+            PlayerSeasonAnalysis analysis = 
+            PlayerSeasonAnalysis.findOrCreateWhere(season : season, league : league, player : player)
+            analysis.twentyFifthPercentile = Occurance.compute(points, { it > positionAnalysis.twentyFifthPercentile.average })
+            analysis.fiftiethPercentile = Occurance.compute(points, { it > positionAnalysis.fiftiethPercentile.average })
+            analysis.hundrethPercentile = Occurance.compute(points, { it > positionAnalysis.hundrethPercentile.average })
+            analysis.playables = Occurance.compute(points, { it > positionAnalysis.playables.average })
+            analysis.save()
         }
     }
 }
