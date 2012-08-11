@@ -26,30 +26,60 @@
     <g:if test="${flash.message}">
       <div class="message" role="status">${flash.message}</div>
     </g:if>
-
-    <table>
-      <thead>
-        <tr>
-          
-          <th><g:message code="league.scoring.label" default="Position" /></th>
-          <g:each in="${grailsApplication.config.playerPositionOrder}" var="position">
-            <th>${position}</th>
-          </g:each>
-      
+    
+    <g:if test="${params.position}">
+      <h1>${params.position}</h1>
+      <table>
+        <thead>
+          <tr>
+            <th><g:message code="league.position.season.label" default="Season" /></th>
+            <th>0%</th>
+            <th>25%</th>
+            <th>50%</th>
+            <th>100%</th>
+            <th>Average</th>
           </tr>
-      </thead>
-      <tbody>
-      <g:each in="${seasonInstanceList}" status="i" var="seasonInstance">
-        <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-          <td>${seasonInstance.year}</td>
+        </thead>
+        <tbody>
+        <g:each in="${seasonInstanceList}" status="i" var="seasonInstance">
+          <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
+            <td>${seasonInstance.year}</td>
+            <g:set var="analysis" value="${positionAnalysisLookup.get(params.position)?.get(seasonInstance.year)}"/>
+            <td>${analysis?.get(0)?.zerothPercentile?.average}</td>
+            <td>${analysis?.get(0)?.twentyFifthPercentile?.average}</td>
+            <td>${analysis?.get(0)?.fiftiethPercentile?.average}</td>
+            <td>${analysis?.get(0)?.hundrethPercentile?.average}</td>
+            <td>${analysis?.get(0)?.playables?.average}</td>
+          </tr>
+        </g:each>
+        </tbody>
+      </table>
+    </g:if>
+    <g:else>
+      <table>
+        <thead>
+            <tr>
+
+            <th><g:message code="league.position.season.label" default="Season" /></th>
+        <g:each in="${grailsApplication.config.playerPositionOrder}" var="position">
+          <th>${position}</th>
+        </g:each>
+
+        </tr>
+        </thead>
+        <tbody>
+        <g:each in="${seasonInstanceList}" status="i" var="seasonInstance">
+          <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
+            <td>${seasonInstance.year}</td>
           <g:each in="${grailsApplication.config.playerPositionOrder}" var="position">
             <g:set var="analysis" value="${positionAnalysisLookup.get(position)?.get(seasonInstance.year)}"/>
-             <td>${analysis?.get(0)?.twentyFifthPercentile?.average}</td>
+            <td>${analysis?.get(0)?.twentyFifthPercentile?.average}</td>
           </g:each>
-      </tr>
-      </g:each>
-      </tbody>
-    </table>
+          </tr>
+        </g:each>
+        </tbody>
+      </table>
+    </g:else>
 
 
     <g:form>

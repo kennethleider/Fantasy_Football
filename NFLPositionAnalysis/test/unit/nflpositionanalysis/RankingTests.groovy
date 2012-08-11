@@ -1,4 +1,4 @@
-package leider.ken.nfl.stats.league.analysis
+package nflpositionanalysis
 
 
 
@@ -8,8 +8,8 @@ import org.junit.*
 /**
  * See the API for {@link grails.test.mixin.domain.DomainClassUnitTestMixin} for usage instructions
  */
-@TestFor(PlayerSeasonAnalysis)
-class PlayerSeasonAnalysisTests {
+@TestFor(Ranking)
+class RankingTests {
 
     void testSomething() {
        fail "Implement me"

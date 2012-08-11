@@ -8,7 +8,7 @@ class Season {
 
     static mapping = {
         sort year: 'asc'
-        weeks sort: 'number', order: 'asc'
+        weeks sort: 'number', order: 'asc', lazy : false
     }
 	
     Integer year

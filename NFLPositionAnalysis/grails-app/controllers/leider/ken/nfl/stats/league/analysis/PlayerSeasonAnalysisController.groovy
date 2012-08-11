@@ -32,6 +32,7 @@ class PlayerSeasonAnalysisController {
 
     def show(Long id) {
         def playerSeasonAnalysisInstance = PlayerSeasonAnalysis.get(id)
+        println playerSeasonAnalysisInstance.rankings
         if (!playerSeasonAnalysisInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'playerSeasonAnalysis.label', default: 'PlayerSeasonAnalysis'), id])
             redirect(action: "list")

@@ -1,6 +1,11 @@
 package leider.ken.nfl.stats
 
 class ImportService {
+    def sessionFactory
+        
+     public def process(String name, Collection group, Closure worker) throws Exception {
+         process(name, group.size(), { return group }, worker)
+     }
     
     public def process(String name, long total, Closure groupIterator, Closure worker) throws Exception {
         int i = 0
@@ -9,9 +14,10 @@ class ImportService {
         while(i < total) {
             def group = groupIterator()
             long start = System.currentTimeMillis()
-            for (def value in group) {
-                retval.add(worker(value))
+            group.eachWithIndex { value, index ->
+                retval.add(worker(value, index))
             }
+
             i += group.size()
             sessionFactory.currentSession.flush()
             sessionFactory.currentSession.clear()

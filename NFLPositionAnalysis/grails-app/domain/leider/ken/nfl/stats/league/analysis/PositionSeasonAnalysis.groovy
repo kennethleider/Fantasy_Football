@@ -10,6 +10,7 @@ class PositionSeasonAnalysis {
     }
     
     static mapping = {
+        zerothPercentile cascade: "save-update,delete"
         twentyFifthPercentile cascade: "save-update,delete"
         fiftiethPercentile cascade: "save-update,delete"
         hundrethPercentile cascade: "save-update,delete"

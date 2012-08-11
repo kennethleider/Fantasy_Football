@@ -28,13 +28,7 @@
 					
 						<th><g:message code="playerSeasonAnalysis.season.label" default="Season" /></th>
 					
-						<th><g:message code="playerSeasonAnalysis.twentyFifthPercentile.label" default="Twenty Fifth Percentile" /></th>
-					
-						<th><g:message code="playerSeasonAnalysis.fiftiethPercentile.label" default="Fiftieth Percentile" /></th>
-					
-						<th><g:message code="playerSeasonAnalysis.hundrethPercentile.label" default="Hundreth Percentile" /></th>
-					
-						<th><g:message code="playerSeasonAnalysis.playables.label" default="Playables" /></th>
+						<th><g:message code="playerSeasonAnalysis.league.label" default="League" /></th>
 					
 					</tr>
 				</thead>
@@ -46,13 +40,7 @@
 					
 						<td>${fieldValue(bean: playerSeasonAnalysisInstance, field: "season")}</td>
 					
-						<td>${fieldValue(bean: playerSeasonAnalysisInstance, field: "twentyFifthPercentile")}</td>
-					
-						<td>${fieldValue(bean: playerSeasonAnalysisInstance, field: "fiftiethPercentile")}</td>
-					
-						<td>${fieldValue(bean: playerSeasonAnalysisInstance, field: "hundrethPercentile")}</td>
-					
-						<td>${fieldValue(bean: playerSeasonAnalysisInstance, field: "playables")}</td>
+						<td>${fieldValue(bean: playerSeasonAnalysisInstance, field: "league")}</td>
 					
 					</tr>
 				</g:each>
