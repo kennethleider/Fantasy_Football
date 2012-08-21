@@ -1,5 +1,7 @@
 package leider.ken.nfl.stats
 
+import leider.ken.nfl.Player
+
 class PlayerStats {
 
     static constraints = {

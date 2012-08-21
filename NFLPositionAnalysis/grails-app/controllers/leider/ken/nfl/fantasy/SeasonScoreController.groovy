@@ -1,8 +1,8 @@
-package leider.ken.nfl.stats.league
+package leider.ken.nfl.fantasy
 
 import org.springframework.dao.DataIntegrityViolationException
 
-import leider.ken.nfl.stats.Season
+import leider.ken.nfl.Season
 
 class SeasonScoreController {
 

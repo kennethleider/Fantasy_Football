@@ -1,6 +1,6 @@
 package leider.ken.nfl.armchairanalysis
 
-import leider.ken.nfl.stats.Player
+import leider.ken.nfl.Player
 class Punt {
 
     static belongsTo = [ play: Play ]

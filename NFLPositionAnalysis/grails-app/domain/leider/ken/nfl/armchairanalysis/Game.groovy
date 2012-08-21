@@ -1,6 +1,6 @@
 package leider.ken.nfl.armchairanalysis
 
-import leider.ken.nfl.stats.Week
+import leider.ken.nfl.Week
 class Game {
 
     static constraints = {

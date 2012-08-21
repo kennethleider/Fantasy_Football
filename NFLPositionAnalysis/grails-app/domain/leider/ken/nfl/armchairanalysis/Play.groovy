@@ -1,6 +1,6 @@
 package leider.ken.nfl.armchairanalysis
 
-import leider.ken.nfl.stats.Season
+
 
 class Play {
     static belongsTo = [ game : Game ]

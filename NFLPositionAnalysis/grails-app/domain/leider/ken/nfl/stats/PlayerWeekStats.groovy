@@ -1,9 +1,13 @@
 package leider.ken.nfl.stats
 
+import leider.ken.nfl.Week
+import leider.ken.nfl.Franchise
+
 class PlayerWeekStats extends PlayerStats {
 
     static constraints = {
         week unique: ['player']
+        franchise nullable : true
     }
 		
     static mapping = {
@@ -13,4 +17,5 @@ class PlayerWeekStats extends PlayerStats {
 	
 	
     Week week
+    Franchise franchise
 }

@@ -147,5 +147,16 @@ yahooLookup = [
     8508L : 'JH-470',
     8896L : 'KM-260',
     8548L : 'MB-060',
-    9122L : 'SG-050'
+    9122L : 'SG-050',
+    8627L : 'MW-310'
+]
+
+yahooTeamCodes = [
+    'TAM' : 'TB',
+    'KAN' : 'KC',
+    'SDG' : 'SD',
+    'SFO' : 'SF',
+    'NOR' : 'NO',
+    'NWE' : 'NE',
+    'GNB' : 'GB'
 ]

@@ -1,4 +1,4 @@
-package leider.ken.nfl.stats
+package leider.ken.nfl
 
 import org.springframework.dao.DataIntegrityViolationException
 

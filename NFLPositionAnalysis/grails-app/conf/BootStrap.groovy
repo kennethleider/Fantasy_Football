@@ -1,5 +1,8 @@
-import leider.ken.nfl.stats.league.League
-import leider.ken.nfl.stats.league.RosterPosition
+import leider.ken.nfl.fantasy.League
+import leider.ken.nfl.fantasy.RosterPosition
+
+import leider.ken.nfl.Franchise
+
 class BootStrap {
 
     def init = { servletContext ->
@@ -63,6 +66,47 @@ class BootStrap {
         new RosterPosition(league: league, positions : [ 'RB' ], slots : 3).save()
         new RosterPosition(league: league, positions : [ 'WR' ], slots : 4).save()
         new RosterPosition(league: league, positions : [ 'TE' ], slots : 1).save()
+        
+        initFranchises()
+    }
+    
+    def initFranchises() {
+        Franchise.findOrSaveWhere(name : "Cardinals", code : "ARI", location : "Arizona")
+        Franchise.findOrSaveWhere(name : "Falcons", code : "ATL", location : "Atlanta")
+        Franchise.findOrSaveWhere(name : "Ravens", code : "BAL", location : "Baltimore")
+        Franchise.findOrSaveWhere(name : "Bills", code : "BUF", location : "Buffalo")
+        Franchise.findOrSaveWhere(name : "Panthers", code : "CAR", location : "Carolina")
+        Franchise.findOrSaveWhere(name : "Bears", code : "CHI", location : "Chicago")
+        Franchise.findOrSaveWhere(name : "Bengals", code : "CIN", location : "Cincinnati")
+        Franchise.findOrSaveWhere(name : "Browns", code : "CLE", location : "Cleveland")
+        Franchise.findOrSaveWhere(name : "Cowboys", code : "DAL", location : "Dallas")
+        Franchise.findOrSaveWhere(name : "Broncos", code : "DEN", location : "Denver")
+        Franchise.findOrSaveWhere(name : "Lions", code : "DET", location : "Detroit")
+        Franchise.findOrSaveWhere(name : "Packers", code : "GB", location : "Green Bay")
+        Franchise.findOrSaveWhere(name : "Texans", code : "HOU", location : "Houston")
+        Franchise.findOrSaveWhere(name : "Colts", code : "IND", location : "Indianapolis")
+        Franchise.findOrSaveWhere(name : "Jaguars", code : "JAC", location : "Jacksonville")
+        Franchise.findOrSaveWhere(name : "Chiefs", code : "KC", location : "Kansas City")
+        Franchise.findOrSaveWhere(name : "Dolphins", code : "MIA", location : "Miami")
+        Franchise.findOrSaveWhere(name : "Vikings", code : "MIN", location : "Minnesota")
+        Franchise.findOrSaveWhere(name : "Patriots", code : "NE", location : "New England")
+        Franchise.findOrSaveWhere(name : "Saints", code : "NO", location : "New Orleans")
+        Franchise.findOrSaveWhere(name : "Giants", code : "NYG", location : "New York")
+        Franchise.findOrSaveWhere(name : "Jets", code : "NYJ", location : "New York")
+        Franchise.findOrSaveWhere(name : "Raiders", code : "OAK", location : "Oakland")
+        Franchise.findOrSaveWhere(name : "Eagles", code : "PHI", location : "Philadelphia")
+        Franchise.findOrSaveWhere(name : "Steelers", code : "PIT", location : "Pittsburgh")
+        Franchise.findOrSaveWhere(name : "Rams", code : "STL", location : "Ssint Louis")
+        Franchise.findOrSaveWhere(name : "Chargers", code : "SD", location : "San Diego")
+        Franchise.findOrSaveWhere(name : "49ers", code : "SF", location : "San Francisco")
+        Franchise.findOrSaveWhere(name : "Seahawks", code : "SEA", location : "Seattle")
+        Franchise.findOrSaveWhere(name : "Buccaneers", code : "TB", location : "Tampa Bay")
+        Franchise.findOrSaveWhere(name : "Titans", code : "TEN", location : "Tennessee")
+        Franchise.findOrSaveWhere(name : "Redskins", code : "WAS", location : "Washington")
+        
+        // Legacy
+        Franchise.findOrSaveWhere(name : "Oilers", code : "HOU", location : "Houston")
+
     }
     def destroy = {
     }

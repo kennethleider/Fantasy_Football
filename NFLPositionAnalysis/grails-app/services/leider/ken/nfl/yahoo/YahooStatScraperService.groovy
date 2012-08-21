@@ -1,8 +1,9 @@
 package leider.ken.nfl.yahoo
 
-import leider.ken.nfl.stats.Season
-import leider.ken.nfl.stats.Week
-import leider.ken.nfl.stats.Player
+import leider.ken.nfl.Franchise
+import leider.ken.nfl.Season
+import leider.ken.nfl.Week
+import leider.ken.nfl.Player
 import leider.ken.nfl.stats.PlayerStats
 import leider.ken.nfl.stats.PlayerWeekStats
 import leider.ken.nfl.armchairanalysis.ArmchairPlayerRef
@@ -96,7 +97,7 @@ class YahooStatScraperService {
                         stats.games = toInt(td[2].text())
                         stats.save()
                     } else {
-                        println "Unable to find a match for yahoo player: ${i} - ${name}}"
+                        println "Unable to find a match for yahoo player: ${id} - ${name}}"
                     }
                     
                 }    
@@ -110,10 +111,8 @@ class YahooStatScraperService {
             { it.@class.text().contains("ysprow")},
             {
                 def td = it.td
-                def id = (td[0].a.@href.text()=~ /\d+/)[0].toLong()
-   
-                Player player = YahooPlayerRef.get(id)?.player
-                PlayerWeekStats stats = PlayerWeekStats.findOrCreateWhere(player: player, week :  week)
+                def stats = commonStats(td, week)
+              
                 stats.passing.qbRating = td[4].span.text().toDouble()
                 stats.passing.completions = toInt(td[5].text())
                 stats.passing.attempts = toInt(td[6].text())
@@ -141,10 +140,8 @@ class YahooStatScraperService {
             { it.@class.text().contains("ysprow")},
             {
                 def td = it.td
-                def id = (td[0].a.@href.text()=~ /\d+/)[0].toLong()
+                def stats = commonStats(td, week)
                 
-                Player player = YahooPlayerRef.get(id)?.player
-                PlayerWeekStats stats = PlayerWeekStats.findOrCreateWhere(player: player, week :  week)                       
                 stats.rushing.attempts = toInt(td[4].text())
                 stats.rushing.yards = toInt(td[5].text())
                 stats.rushing.TDs = toInt(td[8].text())
@@ -165,10 +162,8 @@ class YahooStatScraperService {
             { it.@class.text().contains("ysprow")},
             {
                 def td = it.td
-                def id = (td[0].a.@href.text()=~ /\d+/)[0].toLong()
+                def stats = commonStats(td, week)
                 
-                Player player = YahooPlayerRef.get(id)?.player
-                PlayerWeekStats stats = PlayerWeekStats.findOrCreateWhere(player: player, week :  week)                       
                 stats.receiving.receptions = toInt(td[4].text())
                 stats.receiving.yards = toInt(td[5].text())
                 stats.receiving.TDs = toInt(td[8].text())
@@ -193,10 +188,8 @@ class YahooStatScraperService {
             { it.@class.text().contains("ysprow")},
             {
                 def td = it.td
-                def id = (td[0].a.@href.text()=~ /\d+/)[0].toLong()
+                def stats = commonStats(td, week)
                 
-                Player player = YahooPlayerRef.get(id)?.player
-                PlayerWeekStats stats = PlayerWeekStats.findOrCreateWhere(player: player, week :  week)                       
                 stats.receiving.receptions = toInt(td[4].text())
                 stats.receiving.yards = toInt(td[5].text())
                 stats.receiving.TDs = toInt(td[8].text())
@@ -211,6 +204,18 @@ class YahooStatScraperService {
         ) 
     }
     
+    private def commonStats(def td, Week week) {
+        def id = (td[0].a.@href.text()=~ /\d+/)[0].toLong()
+        
+        Player player = YahooPlayerRef.get(id)?.player
+        PlayerWeekStats stats = PlayerWeekStats.findOrCreateWhere(player: player, week :  week)
+        
+        def teamCode = td[1].text().trim()
+        if (grailsApplication.config.yahooTeamCodes.containsKey(teamCode)) {
+            teamCode = grailsApplication.config.yahooTeamCodes.get(teamCode)
+        }
+        return stats
+    }
     
     private def process(String name, String url, Closure filter, Closure scraper) throws Exception {
         InputStream input = new URL(url).openStream()

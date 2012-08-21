@@ -2,9 +2,9 @@ package leider.ken.nfl.armchairanalysis
 
 import com.csvreader.CsvReader;
 
-import leider.ken.nfl.stats.Season
-import leider.ken.nfl.stats.Week
-import leider.ken.nfl.stats.Player
+import leider.ken.nfl.Season
+import leider.ken.nfl.Week
+import leider.ken.nfl.Player
 import leider.ken.nfl.stats.PlayerStats
 import leider.ken.nfl.stats.PlayerWeekStats
 
