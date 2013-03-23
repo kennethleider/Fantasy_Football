@@ -2,20 +2,23 @@ package leider.ken.nfl.fantasy
 
 class ScoringRules {
     static belongsTo = League
-    static embedded = [ 'passing', 'rushing', 'receiving', 'returning', 'defending', 'kicking' ]
+    static embedded = [ 'passing', 'rushing', 'receiving', 'puntReturning', 'kickoffReturning', 'defending', 'kicking' ]
     
     Passing passing = new Passing()
     Rushing rushing = new Rushing()
     Receiving receiving = new Receiving()
-    Returning returning = new Returning()
+    Returning puntReturning = new Returning()
+    Returning kickoffReturning = new Returning()
     Defending defending = new Defending()
     Kicking kicking = new Kicking()
     
     boolean useFractional = true
     boolean useNegative = true
+    double baseline
 }
 
 class Passing {
+    double perAttempt
     double perCompletion
     double perYard
     double perTD
@@ -24,6 +27,7 @@ class Passing {
 }
 
 class Rushing {
+    double perAttempt
     double perYard
     double perTD
     double perFumbleLost
@@ -31,6 +35,7 @@ class Rushing {
 }
 
 class Receiving {
+    double perTarget
     double perReception
     double perYard
     double perTD
@@ -38,6 +43,7 @@ class Receiving {
 }
 
 class Returning {
+    double perAttempt
     double perYard
     double perTD
 }

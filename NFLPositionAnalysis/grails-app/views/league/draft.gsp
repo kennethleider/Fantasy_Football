@@ -26,8 +26,39 @@
     <g:if test="${flash.message}">
       <div class="message" role="status">${flash.message}</div>
     </g:if>
+    
+    <table>
+      <thead>
+        <tr>
+          <th>Player</th>
+          <th>Position</th>
+          <th>Games</th>
+          <th>Opps</th>
+          <th>Opps Dev</th>
+          <th>Points</th>
+          <th>Points Dev</th>
+          <th>Cor. Points</th>
+          <th>Cor. Points Dev</th>
+        </tr>
+      </thead>
+      <tbody>
+      <g:each in="${draftAnalysisInstanceList}"  status="i" var="analysisInstance">       
+          <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
+            <td>${analysisInstance.player}</td>
+            <td>${analysisInstance.player.position}</td>
+            <td>${analysisInstance.games}</td>
+            <td>${analysisInstance.opportunities.average}</td>
+            <td>${analysisInstance.opportunities.standardDeviation}</td>
+            <td>${analysisInstance.points.average}</td>
+            <td>${analysisInstance.points.standardDeviation}</td>            
+            <td>${analysisInstance.correctedPoints.average}</td>
+            <td>${analysisInstance.correctedPoints.standardDeviation}</td>  
+          </tr>
+      </g:each>
+      </tbody>
+    </table>
 
-    <g:link action="position" id="${leagueInstance.id}">Position Analysis</g:link>
+
 
     <g:form>
       <fieldset class="buttons">

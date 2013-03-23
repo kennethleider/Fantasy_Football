@@ -12,10 +12,13 @@ class MatchupScraperService {
         int year = new Date().getYear()
         def seasons = determineSeasons()
         for (def season in Season.list()) {
-            if (season.year != 2012) continue;
             def weeks = determineWeeks(season)
             for (def week in weeks) {
-                scrapeMatchups(week)
+                try {
+                    scrapeMatchups(week)
+                } catch(IOException e) {
+                    println e.message
+                }
             }
         }
     }
@@ -47,7 +50,7 @@ class MatchupScraperService {
     
     def scrapeMatchups(Week week) {
         String url = "http://www.nfl.com/schedules/${week.season.year}/REG${week.number}"
-        
+
         InputStream input = new URL(url).openStream()
         def htmlParser = slurper.parse(input)
         def matches = htmlParser.depthFirst().findAll({it.@class == "list-matchup-row-team"})
@@ -72,20 +75,6 @@ class MatchupScraperService {
        
             }   
         )
-    }
-    
-    
-    
-    private def process(String name, String url, String scriptName, Closure filter, Closure scraper) throws Exception {
-        InputStream input = new URL(url).openStream()
-        def htmlParser = slurper.parse(input)
-        def script = htmlParser.depthFirst().find({it.@id == scriptName})
-        def scriptParser = slurper.parse(new StringReader(script.text()))
-        def matches = scriptParser.depthFirst().findAll(filter)
-        def retval = importService.process(name, matches, scraper)
-
-        input.close()
-        return retval
     }
     
     

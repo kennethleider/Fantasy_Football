@@ -1,5 +1,5 @@
 
-<%@ page import="leider.ken.nfl.stats.league.League" %>
+<%@ page import="leider.ken.nfl.fantasy.League" %>
 <!doctype html>
 <html>
 	<head>

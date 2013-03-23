@@ -10,6 +10,13 @@ class Matchup {
         homeScore nullable : true
     }
     
+    static mapping = {
+        week index: 'matchup_away_idx,matchup_home_idx'
+        away index: 'matchup_away_idx'
+        home index: 'matchup_home_idx'
+    }
+    
+    
     Week week
     Franchise away
     Franchise home

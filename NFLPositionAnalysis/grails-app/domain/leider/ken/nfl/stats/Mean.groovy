@@ -12,23 +12,33 @@ class Mean {
     
     static compute(List values) {
         Mean retval = new Mean()
-        values = values.sort()
-        retval.average = values.sum() / values.size()
-        
-        if (values.size() > 1) {
-            retval.standardDeviation = Math.sqrt((values.sum { Math.pow(it - retval.average,2) }) / values.size())
-            
-            int middle = values.size() / 2
-            if (values.size() % 2 == 0) {
-                retval.median = (values[middle] + values[middle - 1])/ 2
-            } else {
-                retval.median = values[middle]
-            }
-        } else {
+        if (!values) {
+            retval.average = 0
             retval.standardDeviation = 0
-            retval.median = retval.average
+            retval.median = 0
+        } else {
+            values = values.sort()
+ 
+            retval.average = values.sum() / values.size()
+            
+            if (values.size() > 1) {
+                retval.standardDeviation = Math.sqrt((values.sum { Math.pow(it - retval.average,2) }) / values.size())
+                
+                int middle = values.size() / 2
+                if (values.size() % 2 == 0) {
+                    retval.median = (values[middle] + values[middle - 1])/ 2
+                } else {
+                    retval.median = values[middle]
+                }
+            } else {
+                retval.standardDeviation = 0
+                retval.median = retval.average
+            }
         }
-
         return retval;
+    }
+    
+    public String toString() {
+        return average.toString()
     }
 }

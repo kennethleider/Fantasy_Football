@@ -14,29 +14,43 @@ class ScoreService {
                 score = new Score(week : stats.week, player : stats.player, league : league)
             }
             
-            score.points = stats.passing.yards * league.scoring.passing.perYard
-            score.points += stats.passing.completions * league.scoring.passing.perCompletion
-            score.points += stats.passing.TDs * league.scoring.passing.perTD
-            score.points += stats.passing.interceptions * league.scoring.passing.perInt
-            score.points += stats.passing.conversions * league.scoring.passing.perConversion
+            if (stats.player.position.equals("QB")) {
+                score.points = 0
+                score.points += stats.passing.yards * league.scoring.passing.perYard
+                score.points += stats.passing.attempts * league.scoring.passing.perAttempt
+                score.points += stats.passing.completions * league.scoring.passing.perCompletion
+                score.points += stats.passing.TDs * league.scoring.passing.perTD
+                score.points += stats.passing.interceptions * league.scoring.passing.perInt
+                score.points += stats.passing.conversions * league.scoring.passing.perConversion
+                
+                score.points += stats.rushing.attempts * league.scoring.rushing.perAttempt
+                score.points += stats.rushing.yards * league.scoring.rushing.perYard
+                score.points += stats.rushing.TDs * league.scoring.rushing.perTD
+                score.points += stats.rushing.fumblesLost * league.scoring.rushing.perFumbleLost
+                score.points += stats.rushing.conversions * league.scoring.rushing.perConversion
+                
+                score.points += stats.receiving.yards * league.scoring.receiving.perYard
+                score.points += stats.receiving.TDs * league.scoring.receiving.perTD
+                score.points += stats.receiving.receptions * league.scoring.receiving.perReception
+                score.points += stats.receiving.targets * league.scoring.receiving.perTarget
+                score.points += stats.receiving.conversions * league.scoring.receiving.perConversion
+                
+                score.points += stats.kickoff.yards * league.scoring.kickoffReturning.perYard
+                score.points += stats.kickoff.TDs * league.scoring.kickoffReturning.perTD
+                score.points += stats.kickoff.attempts * league.scoring.kickoffReturning.perAttempt
+                
+                score.points += stats.punt.yards * league.scoring.puntReturning.perYard
+                score.points += stats.punt.TDs * league.scoring.puntReturning.perTD
+                score.points += stats.punt.attempts * league.scoring.puntReturning.perAttempt
+                
+                if (score.points != 0) {
+                    score.points += league.scoring.baseline
+                }
+                
+                score.save()
+            }
             
-            score.points += stats.rushing.yards * league.scoring.rushing.perYard
-            score.points += stats.rushing.TDs * league.scoring.rushing.perTD
-            score.points += stats.rushing.fumblesLost * league.scoring.rushing.perFumbleLost
-            score.points += stats.rushing.conversions * league.scoring.rushing.perConversion
             
-            score.points += stats.receiving.yards * league.scoring.receiving.perYard
-            score.points += stats.receiving.TDs * league.scoring.receiving.perTD
-            score.points += stats.receiving.receptions * league.scoring.receiving.perReception
-            score.points += stats.receiving.conversions * league.scoring.receiving.perConversion
-            
-            score.points += stats.kickoff.yards * league.scoring.returning.perYard
-            score.points += stats.kickoff.TDs * league.scoring.returning.perTD
-            
-            score.points += stats.punt.yards * league.scoring.returning.perYard
-            score.points += stats.punt.TDs * league.scoring.returning.perTD
-            
-            score.save()
             return score
         }
         

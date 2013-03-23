@@ -11,4 +11,8 @@ class Franchise {
     String name
     String location
     String code
+    
+    String toString() {
+        return name
+    }
 }

@@ -12,4 +12,8 @@ class League {
 
     ScoringRules scoring = new ScoringRules()
     Integer teams
+    
+    public String toString() {
+        return name
+    }
 }

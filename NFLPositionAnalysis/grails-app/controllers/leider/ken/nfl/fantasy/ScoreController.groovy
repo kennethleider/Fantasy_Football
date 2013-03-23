@@ -17,8 +17,8 @@ class ScoreController {
     def list(Integer max) {
         params.max = Math.min(max ?: 10, 100)
 
-        [scoreInstanceList: Score.findAllByPlayer(Player.get(1125), params), scoreInstanceTotal: Score.countByPlayer(Player.get(1125))]
-        //[scoreInstanceList: Score.list(params), scoreInstanceTotal: Score.count()]
+        //[scoreInstanceList: Score.findAllByPlayer(Player.get(1125), params), scoreInstanceTotal: Score.countByPlayer(Player.get(1125))]
+        [scoreInstanceList: Score.list(params), scoreInstanceTotal: Score.count()]
     }
 
     def create() {

@@ -112,7 +112,7 @@ class YahooStatScraperService {
             {
                 def td = it.td
                 def stats = commonStats(td, week)
-              
+         
                 stats.passing.qbRating = td[4].span.text().toDouble()
                 stats.passing.completions = toInt(td[5].text())
                 stats.passing.attempts = toInt(td[6].text())
@@ -214,11 +214,28 @@ class YahooStatScraperService {
         if (grailsApplication.config.yahooTeamCodes.containsKey(teamCode)) {
             teamCode = grailsApplication.config.yahooTeamCodes.get(teamCode)
         }
+        
+        stats.franchise = Franchise.findByCode(teamCode)
+        
+        if (stats.franchise == null) {
+            println "Unknown franchise code: ${teamCode}"
+        }
+
         return stats
     }
     
     private def process(String name, String url, Closure filter, Closure scraper) throws Exception {
-        InputStream input = new URL(url).openStream()
+        InputStream input
+        for (def attempt in 1..3) {
+            try {
+                input = new URL(url).openStream()
+                break
+            } catch (IOException e) {
+                println e.message
+            }
+        }
+        
+        if (!input) return
         def htmlParser = slurper.parse(input)
         
         def matches = htmlParser.depthFirst().findAll(filter)

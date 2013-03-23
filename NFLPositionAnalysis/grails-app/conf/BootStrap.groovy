@@ -25,8 +25,11 @@ class BootStrap {
         league.scoring.receiving.perTD = 6
         league.scoring.receiving.perConversion = 2
         
-        league.scoring.returning.perYard = 0.04
-        league.scoring.returning.perTD = 6
+        league.scoring.puntReturning.perYard = 0.04
+        league.scoring.puntReturning.perTD = 6
+        
+        league.scoring.kickoffReturning.perYard = 0.04
+        league.scoring.kickoffReturning.perTD = 6
         
         league.save()
         
@@ -40,24 +43,36 @@ class BootStrap {
         league = League.findOrSaveWhere(name : "Castle rock", url: "http://football.fantasysports.yahoo.com/f1/206440")
         league.teams = 12
   
-        league.scoring.passing.perCompletion = 0.0
-        league.scoring.passing.perYard = 0.04
-        league.scoring.passing.perTD = 4
-        league.scoring.passing.perInt = -1
-        league.scoring.passing.perConversion = 2
+        double mean = 407.9037968726
+        double stddev = 199.6369803479
+        double factor = 35/stddev
+        league.scoring.baseline = 100 - (mean * factor)
+        league.scoring.passing.perCompletion = 4.378799350594725 * factor
+        league.scoring.passing.perAttempt = 0
+        league.scoring.passing.perYard = 1 * factor
+        league.scoring.passing.perTD = 60 * factor
+        league.scoring.passing.perInt = 0
+        league.scoring.passing.perConversion = 20 * factor
         
-        league.scoring.rushing.perYard = 0.1
-        league.scoring.rushing.perTD = 6
-        league.scoring.rushing.perConversion = 2
-        league.scoring.rushing.perFumbleLost = -2
+        league.scoring.rushing.perAttempt = 10 * factor
+        league.scoring.rushing.perYard = 1 * factor
+        league.scoring.rushing.perTD = 60 * factor
+        league.scoring.rushing.perConversion = 20 * factor
+        league.scoring.rushing.perFumbleLost = 0
         
-        league.scoring.receiving.perYard = 0.1
-        league.scoring.receiving.perReception = 0
-        league.scoring.receiving.perTD = 6
-        league.scoring.receiving.perConversion = 2
+        league.scoring.receiving.perTarget = 0
+        league.scoring.receiving.perYard = 1 * factor
+        league.scoring.receiving.perReception = 21.576356139486833 * factor
+        league.scoring.receiving.perTD = 60 * factor
+        league.scoring.receiving.perConversion = 20 * factor
         
-        league.scoring.returning.perYard = 0.0
-        league.scoring.returning.perTD = 6
+        league.scoring.puntReturning.perYard = 1 * factor
+        league.scoring.puntReturning.perTD = 60 * factor
+        league.scoring.puntReturning.perAttempt = 32.58588258553947 * factor
+
+        league.scoring.kickoffReturning.perYard = 1 * factor
+        league.scoring.kickoffReturning.perTD = 60 * factor
+        league.scoring.kickoffReturning.perAttempt = 37.47074552580638 * factor
         
         league.save()
         

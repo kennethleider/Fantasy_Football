@@ -2,6 +2,8 @@ package leider.ken.nfl.stats
 
 import org.springframework.dao.DataIntegrityViolationException
 
+import leider.ken.nfl.Player
+
 class PlayerWeekStatsController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
@@ -12,9 +14,10 @@ class PlayerWeekStatsController {
 
     def list(Integer max) {
         params.max = Math.min(max ?: 10, 100)
+        
+        def test = PlayerWeekStats.findAllByPlayer(Player.get(4752))
         for ( int i in 0..15) {
-            println PlayerWeekStats.findAllByPlayer(Player.get(1125))[i].receiving.properties
-            println PlayerWeekStats.findAllByPlayer(Player.get(1125))[i].week
+            println "${test[i].player} - ${test[i].week} : " + test[i].receiving.properties.sort()
         }
         [playerWeekStatsInstanceList: PlayerWeekStats.list(params), playerWeekStatsInstanceTotal: PlayerWeekStats.count()]
     }
