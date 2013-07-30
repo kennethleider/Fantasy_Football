@@ -1,4 +1,4 @@
-<%@ page import="leider.ken.nfl.stats.Player" %>
+<%@ page import="leider.ken.nfl.Player" %>
 <!doctype html>
 <html>
 	<head>

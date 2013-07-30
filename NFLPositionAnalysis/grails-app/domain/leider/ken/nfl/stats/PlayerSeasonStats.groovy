@@ -4,7 +4,6 @@ import leider.ken.nfl.Season
 
 class PlayerSeasonStats extends PlayerStats{
     
-    static embedded = ['passing', 'rushing']
     static constraints = {
         season unique: ['player']
     }

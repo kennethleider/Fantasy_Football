@@ -1,4 +1,4 @@
-<%@ page import="leider.ken.nfl.stats.league.analysis.PlayerSeasonAnalysis" %>
+<%@ page import="leider.ken.nfl.fantasy.analysis.PlayerSeasonAnalysis" %>
 
 
 
@@ -23,6 +23,6 @@
 		<g:message code="playerSeasonAnalysis.league.label" default="League" />
 		<span class="required-indicator">*</span>
 	</label>
-	<g:select id="league" name="league.id" from="${leider.ken.nfl.stats.league.League.list()}" optionKey="id" required="" value="${playerSeasonAnalysisInstance?.league?.id}" class="many-to-one"/>
+	<g:select id="league" name="league.id" from="${leider.ken.nfl.fantasy.League.list()}" optionKey="id" required="" value="${playerSeasonAnalysisInstance?.league?.id}" class="many-to-one"/>
 </div>
 

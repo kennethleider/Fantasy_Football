@@ -4,6 +4,8 @@ import leider.ken.nfl.Player
 
 class PlayerStats {
 
+    static final int NULL = -23879
+    
     static constraints = {
     }
     
@@ -19,37 +21,37 @@ class PlayerStats {
 
 class PassingStats {
     double qbRating
-    int completions
-    int attempts
-    int yards
-    int TDs
-    int interceptions
-    int sacks
-    int sackYards
-    int conversions
+    int completions = PlayerStats.NULL
+    int attempts = PlayerStats.NULL
+    int yards = PlayerStats.NULL
+    int TDs = PlayerStats.NULL
+    int interceptions = PlayerStats.NULL
+    int sacks = PlayerStats.NULL
+    int sackYards = PlayerStats.NULL
+    int conversions = PlayerStats.NULL
 	
 }
 
 class RushingStats {
-    int attempts
-    int yards
-    int TDs
-    int fumbles
-    int fumblesLost
-    int conversions
+    int attempts = PlayerStats.NULL
+    int yards = PlayerStats.NULL
+    int TDs = PlayerStats.NULL
+    int fumbles = PlayerStats.NULL
+    int fumblesLost = PlayerStats.NULL
+    int conversions = PlayerStats.NULL
 }
 
 class ReceivingStats {
-    int targets
-    int receptions
-    int yards
-    int TDs
-    int conversions
+    int targets = PlayerStats.NULL
+    int receptions = PlayerStats.NULL
+    int yards = PlayerStats.NULL
+    int TDs = PlayerStats.NULL
+    int conversions = PlayerStats.NULL
 }
 
 class ReturnStats {
-    int attempts
-    int yards
-    int TDs
+    int attempts = PlayerStats.NULL
+    int yards = PlayerStats.NULL
+    int TDs = PlayerStats.NULL
 }
 

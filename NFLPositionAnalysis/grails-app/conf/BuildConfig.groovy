@@ -36,6 +36,7 @@ grails.project.dependency.resolution = {
         // runtime 'mysql:mysql-connector-java:5.1.16'
 	compile 'org.ccil.cowan.tagsoup:tagsoup:1.2.1'
         compile 'net.sourceforge.javacsv:javacsv:2.0'
+        compile 'org.codehaus.gpars:gpars:0.11'
     }
 
     plugins {

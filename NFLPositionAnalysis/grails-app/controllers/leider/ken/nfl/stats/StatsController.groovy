@@ -1,6 +1,9 @@
 package leider.ken.nfl.stats
 
 import leider.ken.nfl.CommandHistory
+import leider.ken.nfl.Player
+import leider.ken.nfl.Season
+import leider.ken.nfl.Week
 
 class StatsController {
     def yahooStatScraperService
@@ -13,7 +16,7 @@ class StatsController {
             weeklyStatCount : PlayerWeekStats.count(),
             seasonStatCount : PlayerSeasonStats.count(),
             seasons : Season.list(),
-            lastWeek : Week.list().last(),
+            lastWeek : Week.list().isEmpty() ? null : Week.list().last() ,
             commandHistory : CommandHistory.list().collectEntries { [ it.controllerAction , it.lastPerformed ]}
         ]
     }

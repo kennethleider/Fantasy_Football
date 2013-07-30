@@ -1,7 +1,7 @@
 package leider.ken.nfl.fantasy
 
 import leider.ken.nfl.fantasy.*
-import leider.ken.nfl.stats.PlayerWeekStats
+import leider.ken.nfl.stats.*
 
 class ScoreService {
     static transactional = false
@@ -14,41 +14,41 @@ class ScoreService {
                 score = new Score(week : stats.week, player : stats.player, league : league)
             }
             
-            if (stats.player.position.equals("QB")) {
+            //if (stats.player.position.equals("QB")) {
                 score.points = 0
-                score.points += stats.passing.yards * league.scoring.passing.perYard
-                score.points += stats.passing.attempts * league.scoring.passing.perAttempt
-                score.points += stats.passing.completions * league.scoring.passing.perCompletion
-                score.points += stats.passing.TDs * league.scoring.passing.perTD
-                score.points += stats.passing.interceptions * league.scoring.passing.perInt
-                score.points += stats.passing.conversions * league.scoring.passing.perConversion
+                score.points += asInt(stats.passing?.yards) * league.scoring.passing.perYard
+                score.points += asInt(stats.passing?.attempts) * league.scoring.passing.perAttempt
+                score.points += asInt(stats.passing?.completions) * league.scoring.passing.perCompletion
+                score.points += asInt(stats.passing?.TDs) * league.scoring.passing.perTD
+                score.points += asInt(stats.passing?.interceptions) * league.scoring.passing.perInt
+                score.points += asInt(stats.passing?.conversions) * league.scoring.passing.perConversion
                 
-                score.points += stats.rushing.attempts * league.scoring.rushing.perAttempt
-                score.points += stats.rushing.yards * league.scoring.rushing.perYard
-                score.points += stats.rushing.TDs * league.scoring.rushing.perTD
-                score.points += stats.rushing.fumblesLost * league.scoring.rushing.perFumbleLost
-                score.points += stats.rushing.conversions * league.scoring.rushing.perConversion
+                score.points += asInt(stats.rushing?.attempts) * league.scoring.rushing.perAttempt
+                score.points += asInt(stats.rushing?.yards) * league.scoring.rushing.perYard
+                score.points += asInt(stats.rushing?.TDs) * league.scoring.rushing.perTD
+                score.points += asInt(stats.rushing?.fumblesLost) * league.scoring.rushing.perFumbleLost
+                score.points += asInt(stats.rushing?.conversions) * league.scoring.rushing.perConversion
                 
-                score.points += stats.receiving.yards * league.scoring.receiving.perYard
-                score.points += stats.receiving.TDs * league.scoring.receiving.perTD
-                score.points += stats.receiving.receptions * league.scoring.receiving.perReception
-                score.points += stats.receiving.targets * league.scoring.receiving.perTarget
-                score.points += stats.receiving.conversions * league.scoring.receiving.perConversion
+                score.points += asInt(stats.receiving?.yards) * league.scoring.receiving.perYard
+                score.points += asInt(stats.receiving?.TDs) * league.scoring.receiving.perTD
+                score.points += asInt(stats.receiving?.receptions) * league.scoring.receiving.perReception
+                score.points += asInt(stats.receiving?.targets) * league.scoring.receiving.perTarget
+                score.points += asInt(stats.receiving?.conversions) * league.scoring.receiving.perConversion
                 
-                score.points += stats.kickoff.yards * league.scoring.kickoffReturning.perYard
-                score.points += stats.kickoff.TDs * league.scoring.kickoffReturning.perTD
-                score.points += stats.kickoff.attempts * league.scoring.kickoffReturning.perAttempt
+                score.points += asInt(stats.kickoff?.yards) * league.scoring.kickoffReturning.perYard
+                score.points += asInt(stats.kickoff?.TDs) * league.scoring.kickoffReturning.perTD
+                score.points += asInt(stats.kickoff?.attempts) * league.scoring.kickoffReturning.perAttempt
                 
-                score.points += stats.punt.yards * league.scoring.puntReturning.perYard
-                score.points += stats.punt.TDs * league.scoring.puntReturning.perTD
-                score.points += stats.punt.attempts * league.scoring.puntReturning.perAttempt
+                score.points += asInt(stats.punt?.yards) * league.scoring.puntReturning.perYard
+                score.points += asInt(stats.punt?.TDs) * league.scoring.puntReturning.perTD
+                score.points += asInt(stats.punt?.attempts) * league.scoring.puntReturning.perAttempt
                 
                 if (score.points != 0) {
                     score.points += league.scoring.baseline
                 }
                 
                 score.save()
-            }
+            //}
             
             
             return score
@@ -146,4 +146,8 @@ class ScoreService {
         return retval
     }
     
+    
+    private int asInt(int value) {
+        return value == PlayerStats.NULL ? 0 : value
+    }
 }

@@ -13,7 +13,7 @@ hibernate {
 environments {
     development {
         dataSource {
-            //dbCreate = "create-drop" // one of 'create', 'create-drop', 'update', 'validate', ''
+            //Create = "create-drop" // one of 'create', 'create-drop', 'update', 'validate', ''
             dbCreate = "update"
             url = "jdbc:h2:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000"
         }

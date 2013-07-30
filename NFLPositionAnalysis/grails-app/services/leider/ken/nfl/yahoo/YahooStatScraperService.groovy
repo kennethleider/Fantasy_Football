@@ -17,16 +17,19 @@ class YahooStatScraperService {
     
     def load() {
        def seasons = determineSeasons()
-       for (def season in seasons) {
-           def weeks = determineWeeks(season)
+       List weeks = []
+       for (Season season in seasons) {
            scrapePlayers(season)
-           for (def week in weeks) {
-               scrapeQBs(week)
-               scrapeRBs(week)
-               scrapeWRs(week)
-               scrapeTEs(week)
-           }
+           weeks.addAll(determineWeeks(season))
        }
+      
+       weeks.each { week ->
+           scrapeQBs(week)
+           scrapeRBs(week)
+           scrapeWRs(week)
+           scrapeTEs(week) 
+       }
+       
     }
     
     def determineSeasons() {
@@ -63,43 +66,17 @@ class YahooStatScraperService {
                     if (!ref) {
                         ref = new YahooPlayerRef()
                         ref.id = id
+                        ref.player = new Player()
+                        ref.player.name = name
+                        ref.player.position = position
+                        
+                        ref.player.save()
                         ref.save()
                     } 
-                    def player
-                    
-                    def code = grailsApplication.config.yahooLookup[id]
-                    if (code != null) {
-                        player = ArmchairPlayerRef.findByCode(code)?.player
-                        player.name = name
-                    }
-                    
-                    if (player == null) {
-                        def matches = Player.findAllByName(name)
-                        if (matches.size() == 1) {
-                            player = matches[0]
-                        } else if (matches.size() > 1) {
-                            matches = matches.findAll { it.position == position }
-                            
-                            if (matches.size() == 1) {
-                                player = matches[0]
-                            }
-                        }
-                    }
-                    
-                    if (player != null) {
-                        player.position = position
-                        player.save()
-                        
-                        ref.player = player
-                        ref.save()
-                        
-                        PlayerSeasonStats stats = PlayerSeasonStats.findOrCreateWhere(player : player, season : season)
-                        stats.games = toInt(td[2].text())
-                        stats.save()
-                    } else {
-                        println "Unable to find a match for yahoo player: ${id} - ${name}}"
-                    }
-                    
+
+                    PlayerSeasonStats stats = PlayerSeasonStats.findOrCreateWhere(player : ref.player, season : season)                   
+                    stats.games = toInt(td[2].text())
+                    stats.save()
                 }    
             ) 
         }
@@ -129,6 +106,7 @@ class YahooStatScraperService {
                 
                 stats.rushing.fumbles = toInt(td[22].text())
                 stats.rushing.fumblesLost = toInt(td[23].text())
+                stats.save()
             }
         ) 
 
@@ -147,11 +125,13 @@ class YahooStatScraperService {
                 stats.rushing.TDs = toInt(td[8].text())
                 
                 stats.receiving.receptions = toInt(td[10].text())
-                stats.receiving.yards = toInt(td[11].text())
-                stats.receiving.TDs = toInt(td[14].text())
+                stats.receiving.targets = toInt(td[11].text())
+                stats.receiving.yards = toInt(td[12].text())
+                stats.receiving.TDs = toInt(td[15].text())
                 
-                stats.rushing.fumbles = toInt(td[16].text())
-                stats.rushing.fumblesLost = toInt(td[17].text())
+                stats.rushing.fumbles = toInt(td[17].text())
+                stats.rushing.fumblesLost = toInt(td[18].text())
+                stats.save()   
             }
         ) 
     }
@@ -165,19 +145,21 @@ class YahooStatScraperService {
                 def stats = commonStats(td, week)
                 
                 stats.receiving.receptions = toInt(td[4].text())
-                stats.receiving.yards = toInt(td[5].text())
-                stats.receiving.TDs = toInt(td[8].text())
+                stats.receiving.targets = toInt(td[5].text())
+                stats.receiving.yards = toInt(td[6].text())
+                stats.receiving.TDs = toInt(td[9].text())
                 
-                stats.kickoff.attempts = toInt(td[10].text())
-                stats.kickoff.yards = toInt(td[11].text())
-                stats.kickoff.TDs = toInt(td[14].text())
+                stats.kickoff.attempts = toInt(td[11].text())
+                stats.kickoff.yards = toInt(td[12].text())
+                stats.kickoff.TDs = toInt(td[15].text())
                 
-                stats.punt.attempts = toInt(td[16].text())
-                stats.punt.yards = toInt(td[17].text())
-                stats.punt.TDs = toInt(td[20].text())
+                stats.punt.attempts = toInt(td[17].text())
+                stats.punt.yards = toInt(td[18].text())
+                stats.punt.TDs = toInt(td[21].text())
               
-                stats.rushing.fumbles = toInt(td[22].text())
-                stats.rushing.fumblesLost = toInt(td[23].text())
+                stats.rushing.fumbles = toInt(td[23].text())
+                stats.rushing.fumblesLost = toInt(td[24].text())
+                stats.save()   
             }
         ) 
     }
@@ -191,15 +173,17 @@ class YahooStatScraperService {
                 def stats = commonStats(td, week)
                 
                 stats.receiving.receptions = toInt(td[4].text())
-                stats.receiving.yards = toInt(td[5].text())
-                stats.receiving.TDs = toInt(td[8].text())
+                stats.receiving.targets = toInt(td[5].text())
+                stats.receiving.yards = toInt(td[6].text())
+                stats.receiving.TDs = toInt(td[9].text())
                 
-                stats.rushing.attempts = toInt(td[10].text())
-                stats.rushing.yards = toInt(td[11].text())
-                stats.rushing.TDs = toInt(td[14].text())
+                stats.rushing.attempts = toInt(td[11].text())
+                stats.rushing.yards = toInt(td[12].text())
+                stats.rushing.TDs = toInt(td[15].text())
                 
-                stats.rushing.fumbles = toInt(td[16].text())
-                stats.rushing.fumblesLost = toInt(td[17].text())
+                stats.rushing.fumbles = toInt(td[17].text())
+                stats.rushing.fumblesLost = toInt(td[18].text())
+                stats.save()   
             }
         ) 
     }
@@ -225,16 +209,8 @@ class YahooStatScraperService {
     }
     
     private def process(String name, String url, Closure filter, Closure scraper) throws Exception {
-        InputStream input
-        for (def attempt in 1..3) {
-            try {
-                input = new URL(url).openStream()
-                break
-            } catch (IOException e) {
-                println e.message
-            }
-        }
-        
+        InputStream input = openUrl(new URL(url))
+                
         if (!input) return
         def htmlParser = slurper.parse(input)
         
@@ -244,29 +220,54 @@ class YahooStatScraperService {
         long start = System.currentTimeMillis()
         def retval = []
         for (def match in matches) {
+   
             retval.add(scraper(match))
            
             if (i++ % records == 0 || i == matches.size()) {
                 sessionFactory.currentSession.flush()
                 sessionFactory.currentSession.clear()
-                
+
                 org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP.get().clear()
-                println "=== ${name}: ${i} of ${matches.size()}: ${(System.currentTimeMillis() - start)/records}"
+                println "=== ${name}: ${i} of ${matches.size()}: ${(System.currentTimeMillis() - start)/records} ${PlayerSeasonStats.count()}"
                 start = System.currentTimeMillis()
             }
+
         } 
         
         input.close()
         return retval
     }
     
-    
-    private int toInt(String field) {
+   private InputStream openUrl(URL url) {
+
+       File cacheDir = new File(grailsApplication.config.url.cache.app.dir)
+       cacheDir.mkdirs()
+       File cacheFile = new File(cacheDir, URLEncoder.encode(url.toString()))
+           
+        if (!cacheFile.exists()) {
+           for (def attempt in 1..3) {
+            try {
+                println "Connecting to ${url}"
+                FileOutputStream out = new FileOutputStream(cacheFile)
+                InputStream input = url.openStream()                
+                out << input;
+                out.close()
+                input.close();
+                break
+            } catch (IOException e) {
+                println e.message
+            }
+        }
+       }
+       return new FileInputStream(cacheFile);       
+   }
+   
+    private Integer toInt(String field) {
         field = field.replaceAll("[^-0-9]","")
         if (field) {
             return field.toInteger()
         }
         
-        return 0
+        return PlayerStats.NULL;
     }
 }

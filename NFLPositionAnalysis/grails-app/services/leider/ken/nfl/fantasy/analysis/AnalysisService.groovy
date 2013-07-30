@@ -38,22 +38,19 @@ class AnalysisService {
     }
     
     private def analyzePosition(League league, String position, int depth) {
-        int p0 = 0
-        int p25 = depth / 4 - 1
-        int p50 = depth / 2 - 1
-        int p100 = depth - 1
         
         for (def season in Season.list()) {
-            def lists = [ (p0) : [], (p25) : [], (p50) : [], (p100) : [], playables : []]
+
+            println "Analyzing ${position} during ${season}"
+            def lists = []
             
-            def playerAnalysisCache = [ : ]
             for (def week in season.weeks) {
                 if (week.number > grailsApplication.config.regularSeasonWeeks) {
                     continue
                 }
-                println "Analyzing ${position} during ${week}"
+
                 def scores = Score.executeQuery("\
-                    select score.player, score.points\
+                    select score.points\
                     from Score as score\
                     where score.league = :league\
                     and score.week = :week\
@@ -61,62 +58,16 @@ class AnalysisService {
                     order by score.points desc\
                     ", [league : league, week : week, position : position])
                 
-                lists[p0].add(scores[0][1])
-                lists[p25].add(scores[p25][1])
-                lists[p50].add(scores[p50][1])
-                lists[p100].add(scores[p100][1])
-                lists['playables'].addAll(scores.take(depth).collect { it[1]})
-                
-                for (int index in 0..scores.size() - 1) {
-                    def player = scores[index][0]
-                    PlayerSeasonAnalysis analysis = playerAnalysisCache.get(player.id)
-                    
-                    if (analysis == null) {
-                        analysis = PlayerSeasonAnalysis.findOrCreateWhere(league : league, season : season, player : player)
-                        analysis.rankings.each { it.times = 0 }
-                        playerAnalysisCache.put(player.id, analysis)
+                scores.eachWithIndex { row, i ->
+                    if (lists[i] == null) {
+                        lists[i] = []
                     }
-                    
-                    Ranking ranking = analysis.rankings.find { it.rank == index + 1}
-                    if (ranking) {
-                        ranking.times++
-                    } else {
-                        ranking = new Ranking(times : 1, percentage : 0)
-                        ranking.rank = index + 1
-                        if (analysis.rankings == null) {
-                            analysis.rankings = []
-                        }
-                        analysis.rankings.add(ranking)
-                    }
+                    lists[i].add(row)
                 }
             }
-                
-            PositionSeasonAnalysis analysis = PositionSeasonAnalysis.findOrCreateWhere(season : season, league : league, position : position)
-            analysis.zerothPercentile = Mean.compute(lists[p0])
-            analysis.twentyFifthPercentile = Mean.compute(lists[p25])
-            analysis.fiftiethPercentile = Mean.compute(lists[p50])
-            analysis.hundrethPercentile = Mean.compute(lists[p100])
-            analysis.playables = Mean.compute(lists['playables'])
-            analysis.save()
-            
-            for (def playerAnalysis in playerAnalysisCache.values()) {
-                playerAnalysis.rankings = playerAnalysis.rankings.findAll { it != null}
-                playerAnalysis.rankings = playerAnalysis.rankings.findAll { it.times > 0}
-                def rankings = playerAnalysis.rankings.sort { it.rank }
-                
-                int sum = 0
-                for (Ranking ranking in rankings) {
-                    sum += ranking.times
-                    ranking.times = sum
-                }
-                
-                for (Ranking ranking in rankings) {
-                    ranking.percentage = 100 * ranking.times / sum
-                    ranking.save()
-                }
-                playerAnalysis.rankings = rankings
-                playerAnalysis.save()
-            }
+            PositionSeasonAnalysis analysis = PositionSeasonAnalysis.findOrCreateWhere(season : season, league : league, position : position) 
+            analysis.averages = lists.collect { it -> it.sum() / grailsApplication.config.regularSeasonWeeks }
+            analysis.save()            
         }
 
         sessionFactory.currentSession.flush()
@@ -132,41 +83,54 @@ class AnalysisService {
                 PositionSeasonAnalysis.findBySeasonAndLeagueAndPosition(season, league, position)
                 
                 if (positionAnalysis != null) {
-                    analyzePlayers(positionAnalysis)
+                    analyzePlayers(positionAnalysis) 
                 }
-            }
+            }  
         }
     }
         
     def analyzePlayers(PositionSeasonAnalysis positionAnalysis) {
         def league = positionAnalysis.league
         def season = positionAnalysis.season
-       
-        def scores = Score.executeQuery("\
-                    select score.player, score.points\
+        println "Analyzing players: ${positionAnalysis.position} during ${season}"
+        
+        def allScores = Score.executeQuery("\
+                    select score.week, score.player, score.points\
                     from Score as score\
                     where score.league = :league\
                     and score.week.season = :season\
                     and score.player.position = :position\
                     and score.week.number <= :maxWeek\
-                    order by score.player\
+                    order by score.week.number, score.points desc\
                     ", [league : league, 
                         season : season, 
                         position : positionAnalysis.position,
-                        maxWeek : grailsApplication.config.regularSeasonWeeks]
-                )
+                        maxWeek : grailsApplication.config.regularSeasonWeeks])
+
+        def weekScores = allScores.groupBy { it[0] }
+
+        Map playerScores = [ : ]
+        weekScores.each { week, scores ->
+            scores.eachWithIndex { score, index ->
+                 def player = score[1]
+                 def playerScore = playerScores[player]
+                 if (playerScore == null) { 
+                     playerScore = playerScores[player] = []
+                 }
+                 playerScore.add([index,score[2]])
+            }
+        }
         
-        
-        for (def playerScores in scores.groupBy { it[0] }) {
-            def player = playerScores.key
-            def points = playerScores.value.collect { it[1] }
-            
+        playerScores.each { player, score ->
             PlayerSeasonAnalysis analysis = 
             PlayerSeasonAnalysis.findOrCreateWhere(season : season, league : league, player : player)
-            analysis.twentyFifthPercentile = Occurance.compute(points, { it > positionAnalysis.twentyFifthPercentile.average })
-            analysis.fiftiethPercentile = Occurance.compute(points, { it > positionAnalysis.fiftiethPercentile.average })
-            analysis.hundrethPercentile = Occurance.compute(points, { it > positionAnalysis.hundrethPercentile.average })
-            analysis.playables = Occurance.compute(points, { it > positionAnalysis.playables.average })
+
+            def ranks = score.collect { it[0] }
+            def adjustedRanks = score.collect { def points = it[1]; positionAnalysis.averages.findIndexOf { points >= it } }
+
+            analysis.games = score.size()            
+            analysis.rank = Mean.compute(ranks)
+            analysis.adjustedRank = Mean.compute(adjustedRanks)
             analysis.save()
         }
     }

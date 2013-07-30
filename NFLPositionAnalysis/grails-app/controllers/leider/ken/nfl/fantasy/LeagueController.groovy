@@ -134,7 +134,7 @@ class LeagueController {
     def computeScores() {
         League league = League.get(params.id)
         params.overwrite = params.overwrite == "true"
-        scoreService.calculateWeeklyScores(league, params.overwrite)
+        scoreService.calculateWeeklyScores(league, true)
         scoreService.calculateSeasonScores(league)
         CommandHistory history = CommandHistory.findOrCreateWhere(controllerAction : "${params.controller}.${params.action}.${params.id}")
         history.lastPerformed = new Date()
@@ -145,9 +145,9 @@ class LeagueController {
     def analyze() {
         League league = League.get(params.id)
         //analysisService.computePointsAgainst(league)
-        analysisService.computeDraftAnalysis(league)
+        //analysisService.computeDraftAnalysis(league)
         //analysisService.analyzePositions(league)
-        //analysisService.analyzePlayers(league)
+        analysisService.analyzePlayers(league)
         //analysisService.analyzePercentileCounts(league)
     }
 }

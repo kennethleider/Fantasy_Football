@@ -1,4 +1,4 @@
-<%@ page import="leider.ken.nfl.stats.league.SeasonScore" %>
+<%@ page import="leider.ken.nfl.fantasy.SeasonScore" %>
 
 
 
@@ -55,7 +55,7 @@
 		<g:message code="seasonScore.league.label" default="League" />
 		<span class="required-indicator">*</span>
 	</label>
-	<g:select id="league" name="league.id" from="${leider.ken.nfl.stats.league.League.list()}" optionKey="id" required="" value="${seasonScoreInstance?.league?.id}" class="many-to-one"/>
+	<g:select id="league" name="league.id" from="${leider.ken.nfl.fantasy.League.list()}" optionKey="id" required="" value="${seasonScoreInstance?.league?.id}" class="many-to-one"/>
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: seasonScoreInstance, field: 'min', 'error')} required">
