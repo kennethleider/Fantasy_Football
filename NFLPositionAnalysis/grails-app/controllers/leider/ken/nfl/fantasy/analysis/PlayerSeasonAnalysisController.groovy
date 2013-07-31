@@ -23,7 +23,7 @@ class PlayerSeasonAnalysisController {
                           "adjustedRank.average" : "Adjusted Rank - Average", "adjustedRank.median" : "Adjusted Rank - Median", "adjustedRank.standardDeviation" : "Adjusted Rank - STTDEV" ]
 
             def records = PlayerSeasonAnalysis.findAllByGamesGreaterThan(3)
-            exportService.export(params.format, records, fields, labels, [:], [:])
+            exportService.export(params.format,response.outputStream, records, fields, labels, [:], [:])
        }
         [playerSeasonAnalysisInstanceList: PlayerSeasonAnalysis.list(params), playerSeasonAnalysisInstanceTotal: PlayerSeasonAnalysis.count()]
     }
