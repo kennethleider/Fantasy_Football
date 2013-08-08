@@ -17,7 +17,7 @@ class Player {
     String team
     List<String> teamHistory
     
-    String firstYear	
+    Season firstYear
     Integer draftPick
 
     @Override

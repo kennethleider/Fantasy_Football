@@ -8,7 +8,7 @@ import leider.ken.nfl.Week
 class StatsController {
     def yahooStatScraperService
     def armchairAnalysisImportService
-    //def yahooPlayerScraperService
+    def NFLStatScraperService
     
     def index() { 
         return [
@@ -29,6 +29,15 @@ class StatsController {
         redirect (action : 'index')
         
     }
+
+    def nfl() {
+        NFLStatScraperService.load()
+        CommandHistory history = CommandHistory.findOrCreateWhere(controllerAction : "${params.controller}.${params.action}")
+        history.lastPerformed = new Date()
+        history.save()
+        redirect (action : 'index')
+
+    }
     
     def armchair() {
         armchairAnalysisImportService.load()
@@ -37,9 +46,4 @@ class StatsController {
         history.save()
         redirect (action : 'index')
     }
-    
-    def playerDetails() {
-        //yahooStatScraperService.loadPlayerDetails()
-    }
-    
 }
